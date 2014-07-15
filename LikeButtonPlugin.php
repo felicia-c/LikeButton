@@ -4,7 +4,6 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\FrontController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
-use AHWEBDEV\FacebookAWD\Widget\Widget;
 use AHWEBDEV\Framework\Plugin\Plugin;
 
 /**

@@ -21,46 +21,46 @@ class LikeButtonPostType extends Model
 {
 
     /**
-     * 
+     *
      */
     const POSITION_TOP = 'top';
 
     /**
-     * 
+     *
      */
     const POSITION_BOTTOM = 'bottom';
 
     /**
-     * 
+     *
      */
     const POSITION_BOTH = 'both';
 
     /**
      *
-     * @var boolean 
+     * @var boolean
      */
     protected $enable = false;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $position = self::POSITION_TOP;
 
     /**
      *
-     * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton 
+     * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     protected $likeButton;
 
     /**
      *
-     * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton 
+     * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     protected $redefine = false;
 
     /**
-     * 
+     *
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function getLikeButton()
@@ -79,13 +79,14 @@ class LikeButtonPostType extends Model
     }
 
     /**
-     * 
-     * @param \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
+     *
+     * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton         $likeButton
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType
      */
     public function setLikeButton(\AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton)
     {
         $this->likeButton = $likeButton;
+
         return $this;
     }
 
@@ -141,12 +142,14 @@ class LikeButtonPostType extends Model
     public function setEnable($enable)
     {
         $this->enable = $enable;
+
         return $this;
     }
 
     public function setPosition($position)
     {
         $this->position = $position;
+
         return $this;
     }
 
@@ -158,6 +161,7 @@ class LikeButtonPostType extends Model
     public function setRedefine(\AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $redefine)
     {
         $this->redefine = $redefine;
+
         return $this;
     }
 

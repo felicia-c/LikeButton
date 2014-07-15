@@ -22,60 +22,60 @@ class LikeButton extends Model
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $href;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $action;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $layout;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $share;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $width;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $colorscheme;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $kidDirectedSite;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $ref;
 
     /**
      *
-     * @var string 
+     * @var string
      */
     protected $showFaces;
 
     /**
-     * 
+     *
      * @return string
      */
     public function getHref()
@@ -84,7 +84,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getAction()
@@ -93,7 +93,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getLayout()
@@ -102,7 +102,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getShare()
@@ -111,7 +111,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getWidth()
@@ -120,7 +120,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getColorscheme()
@@ -129,7 +129,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getKidDirectedSite()
@@ -138,7 +138,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getRef()
@@ -147,7 +147,7 @@ class LikeButton extends Model
     }
 
     /**
-     * 
+     *
      * @return string
      */
     public function getShowFaces()
@@ -156,101 +156,110 @@ class LikeButton extends Model
     }
 
     /**
-     * 
-     * @param string $href
+     *
+     * @param  string                                                   $href
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setHref($href)
     {
         $this->href = $href;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $action
+     *
+     * @param  string                                                   $action
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setAction($action)
     {
         $this->action = $action;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $layout
+     *
+     * @param  string                                                   $layout
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setLayout($layout)
     {
         $this->layout = $layout;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $share
+     *
+     * @param  string                                                   $share
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setShare($share)
     {
         $this->share = $share;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $width
+     *
+     * @param  string                                                   $width
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setWidth($width)
     {
         $this->width = $width;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $colorscheme
+     *
+     * @param  string                                                   $colorscheme
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setColorscheme($colorscheme)
     {
         $this->colorscheme = $colorscheme;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $kidDirectedSite
+     *
+     * @param  string                                                   $kidDirectedSite
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setKidDirectedSite($kidDirectedSite)
     {
         $this->kidDirectedSite = $kidDirectedSite;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $ref
+     *
+     * @param  string                                                   $ref
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setRef($ref)
     {
         $this->ref = $ref;
+
         return $this;
     }
 
     /**
-     * 
-     * @param string $showFaces
+     *
+     * @param  string                                                   $showFaces
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setShowFaces($showFaces)
     {
         $this->showFaces = $showFaces;
+
         return $this;
     }
 

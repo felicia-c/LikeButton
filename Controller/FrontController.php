@@ -35,6 +35,7 @@ class FrontController extends BaseController
 
         //front end hooks
         add_filter('the_content', array($this, 'addLikeButton'));
+        //add_filter('prepend_attachment', array($this, 'addLikeButton'));
         add_filter('wp_enqueue_scripts', array($this, 'enqueueScripts'));
         add_shortcode($this->container->getSlug(), array($this, 'shortcodeLikeButton'));
     }
@@ -51,7 +52,7 @@ class FrontController extends BaseController
 
     /**
      * Helpers to get a likeButton from postType configuration
-     * @param WP_Post $post
+     * @param  WP_Post                    $post
      * @return boolean|LikeButtonPostType
      */
     public function getLikeButtonPostTypeFromPost($post, $config = array())
@@ -77,19 +78,20 @@ class FrontController extends BaseController
     }
 
     /**
-     * 
-     * @param \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
+     *
+     * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
      * @return string
      */
     public function renderLikeButton(LikeButton $likeButton)
     {
         $template = $this->container->getRootPath() . '/Resources/views/likeButton.html.php';
+
         return $this->render($template, array('likeButton' => $likeButton));
     }
 
     /**
-     * 
-     * @param \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
+     *
+     * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
      * @return string
      */
     public function shortcodeLikeButton($options, $content = null)
@@ -104,12 +106,13 @@ class FrontController extends BaseController
         }
         $likeButton = new LikeButton();
         $likeButton->bind($configs);
+
         return $this->renderLikeButton($likeButton);
     }
 
     /**
      * Add the like buntton on content
-     * @param string $content
+     * @param  string $content
      * @return string
      */
     public function addLikeButton($content)
@@ -120,7 +123,7 @@ class FrontController extends BaseController
 
         $post = get_post();
         $likeButtonPosType = $this->getLikeButtonPostTypeFromPost($post);
-        
+
         if (!$likeButtonPosType) {
             return $content;
         }
@@ -145,6 +148,7 @@ class FrontController extends BaseController
                 break;
         }
         ksort($contents);
+
         return implode('', $contents);
     }
 

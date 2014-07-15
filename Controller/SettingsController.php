@@ -82,7 +82,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * 
+     *
      * @global \WP_Widget_Factory $wp_widget_factory
      */
     public function registerWidgets()
@@ -130,7 +130,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                 add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
                 add_action('admin_print_styles-post.php', array($this->admin, 'enqueueScripts'));
                 add_action('save_post', array($this, 'handlesSettingsSection'));
-
+                add_action('edit_attachment', array($this, 'handlesSettingsSection'));
                 add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType, $likeButtonPosType));
             }
         }
@@ -172,10 +172,10 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * 
-     * @param stdClass $postType
-     * @param LikeButtonPostType $likeButtonPostType
-     * @param null|WP_Post $post
+     *
+     * @param  stdClass           $postType
+     * @param  LikeButtonPostType $likeButtonPostType
+     * @param  null|WP_Post       $post
      * @return string
      */
     public function settingsSection($postType, $likeButtonPostType, $post = null)
@@ -227,6 +227,7 @@ class SettingsController extends BaseController implements MetaboxInterface
         $sections['security'] = $form->proccessFields('posttype_' . $postType->name, $this->container->getRoot()->getTokenFormConfig());
 
         $template = $this->container->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
+
         return $this->render($template, array(
                     'withSubmit' => !$post,
                     'postTypeName' => $postType->name,
@@ -238,7 +239,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     /**
      * Wrap a section into metaboes
      * @param $post
-     * @param array $metaboxData
+     * @param  array            $metaboxData
      * @throws RuntimeException
      */
     public function settingsBoxes($post, array $metaboxData)
@@ -247,14 +248,14 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * 
+     *
      */
     public function handlesSettingsSection($postId = null)
     {
         $request = filter_input_array(INPUT_POST);
         if ($request) {
             foreach ($request as $key => $postTypeRequest) {
-                if (preg_match('/' . $this->container->getSlug() . '_posttype/', $key)) {
+                if (preg_match('/' . $this->container->getSlug() . 'posttype/', $key)) {
                     if (is_array($postTypeRequest)) {
                         //echo "<pre>" . print_r($postTypeRequest, true) . "</pre>";
                         $isTokenValid = wp_verify_nonce($postTypeRequest['token'], 'fawd-token');
@@ -272,6 +273,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                                 } else {
                                     delete_post_meta($postId, $this->container->getSlug() . '_posttype');
                                 }
+
                                 return;
                             }
 

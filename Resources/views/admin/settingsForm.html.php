@@ -34,4 +34,3 @@ function createSection_awdTemplate($sections)
         <?php } ?>
     </form>
 </div>
-
