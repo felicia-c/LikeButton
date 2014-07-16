@@ -1,23 +1,26 @@
 <?php
-
 /**
  * View Admin template
  * @author AHWEBDEV (Alexandre Hermann) [hermann.alexandre@ahwebev.fr]
  */
-function createSection_awdTemplate($sections)
-{
-    foreach ($sections as $section => $content) {
-        ?>
-        <div class="section_<?php echo $section; ?>"><?php
-            if (is_array($content)) {
-                echo createSection_awdTemplate($content);
-            } else {
-                echo $content;
-            }
+if (!function_exists('createSection_awdTemplate')) {
+
+    function createSection_awdTemplate($sections)
+    {
+        foreach ($sections as $section => $content) {
             ?>
-        </div>
-        <?php
+            <div class="section_<?php echo $section; ?>"><?php
+                if (is_array($content)) {
+                    echo createSection_awdTemplate($content);
+                } else {
+                    echo $content;
+                }
+                ?>
+            </div>
+            <?php
+        }
     }
+
 }
 ?>
 <div class="facebookAWD <?php echo $postTypeName; ?> posttype_section">
