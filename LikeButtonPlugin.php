@@ -9,7 +9,7 @@ use AHWEBDEV\Framework\Plugin\Plugin;
 /**
  * Facebook AWD LikeButton
  *
- * @package facebook-awd
+ * @package FacebookAWD
  * @author AHWEBDEV (Alexandre Hermann) [hermann.alexandre@ahwebev.fr]
  */
 class LikeButtonPlugin extends Plugin
