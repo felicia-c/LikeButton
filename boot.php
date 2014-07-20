@@ -14,7 +14,7 @@
 require_once dirname(__DIR__) . '/facebook-awd/vendor/autoload.php';
 use Composer\Autoload\ClassLoader;
 $loader = new ClassLoader();
-$loader->addPsr4('', __DIR__ . "/src");
+$loader->addPsr4('AHWEBDEV\\FacebookAWD\\Plugin\\LikeButton\\', __DIR__ . "/src");
 $loader->register(true);
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
