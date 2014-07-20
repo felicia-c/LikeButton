@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 /**
  * Facebook AWD
@@ -6,11 +6,12 @@
  * This file is part of the facebook AWD package
  * 
  */
+
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\FrontController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
-use AHWEBDEV\Framework\Plugin\Plugin;
+use AHWEBDEV\Wordpress\Plugin\Plugin;
 
 /**
  * FacebookAWD Like Button
@@ -26,15 +27,13 @@ class LikeButtonPlugin extends Plugin
 {
 
     /**
-     * Define container data
-     * Register the plugin on facebook AWD
+     * Constructor
+     * 
+     * @param string $pluginFile The that contains data
      */
-    public function __construct()
+    public function __construct($pluginFile = null)
     {
-        $this->slug = 'facebookawd_likebutton';
-        $this->title = 'Facebook AWD Like Button';
-        $this->ptd = 'facebookawd_likebutton';
-        parent::__construct();
+        parent::__construct($pluginFile);
         add_action('facebookawd_register_plugins', array($this, 'init'));
     }
 

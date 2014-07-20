@@ -11,10 +11,14 @@
   Text Domain: FacebookAWD
   Last modification: 22/05/2014
  */
+
+require_once dirname(__DIR__) . '/facebook-awd/vendors/autoload/autoload.php';
+require_once dirname(__DIR__) . '/facebook-awd/vendors/autoload/ClassLoader.php';
+use Composer\Autoload\ClassLoader;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
 
-//initialize the Extension
-$facebookAWDLikeButton = new LikeButtonPlugin();
+$loader = new ClassLoader();
+$loader->add('AHWEBDEV\\FacebookAWD\\Plugin\\LikeButton', __DIR__."/src");
+$loader->register(true);
 
-//extra debug tool
-//$facebookAWDLikeButton->debug(true);
+$facebookAWDLikeButton = new LikeButtonPlugin(__FILE__);

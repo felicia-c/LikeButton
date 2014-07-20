@@ -52,7 +52,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function getMenuTitle()
     {
-        return $this->container->getTitle();
+        return preg_replace('/' . $this->container->getRoot()->getTitle() . '/', '', $this->container->getTitle());
     }
 
     /**

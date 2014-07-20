@@ -33,7 +33,7 @@
          * @returns {void}
          */
         this.submitPostTypeSettingsForm = function($form) {
-            var data = $form.serialize() + '&action=save_settings_facebookawd_likebutton';
+            var data = $form.serialize() + '&action=save_settings_facebookawdlikebutton';
             $.post(ajaxurl, data, function(data) {
                 $('.posttype_section.' + data.postTypeName).replaceWith(data.section);
                 var $newSection = $('.posttype_section.' + data.postTypeName);
