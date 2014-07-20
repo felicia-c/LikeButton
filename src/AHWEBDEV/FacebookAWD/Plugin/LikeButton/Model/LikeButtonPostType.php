@@ -1,66 +1,80 @@
 <?php
 
+/**
+ * Facebook AWD
+ *
+ * This file is part of the facebook AWD package
+ * 
+ */
+
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model;
 
 use AHWEBDEV\Framework\Model\Model;
 
-/*
- * This file is part of FacebookAWD.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * LikeButtonPostType
+ * FacebookAWD Like Button LikeButtonPostType Model
  *
- * @author Alexandre Hermann <hermann.alexandren@ahwebdev.fr>
- * @package FacebookAWD
+ * This file is the LikeButtonPostType Model
+ * 
+ * @subpackage   FacebookAWDLikeButton
+ * @package   FacebookAWD
+ * @category     Extension
+ * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class LikeButtonPostType extends Model
 {
 
     /**
-     *
+     * The position top
      */
     const POSITION_TOP = 'top';
 
     /**
-     *
+     * The position bottom
      */
     const POSITION_BOTTOM = 'bottom';
 
     /**
-     *
+     * The position top & bottom
      */
     const POSITION_BOTH = 'both';
 
     /**
-     *
+     * Enable
+     * 
      * @var boolean
      */
     protected $enable = false;
 
     /**
-     *
+     * Position
+     * 
      * @var string
      */
     protected $position = self::POSITION_TOP;
 
     /**
-     *
+     * LikeButton
+     * 
+     * The like button associated with the post type
+     * 
      * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     protected $likeButton;
 
     /**
-     *
-     * @var \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
+     * Redefine
+     * 
+     * Determine if this post configuration is redefined from post
+     * If yes, this config will be used.
+     * 
+     * @var boolean 
      */
     protected $redefine = false;
 
     /**
-     *
+     * Get the like button
+     * 
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function getLikeButton()
@@ -79,7 +93,8 @@ class LikeButtonPostType extends Model
     }
 
     /**
-     *
+     * Set the like button
+     * 
      * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton         $likeButton
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType
      */
@@ -91,8 +106,7 @@ class LikeButtonPostType extends Model
     }
 
     /**
-     *
-     * @return type
+     * {@inheritdoc}
      */
     protected function getDefaultFormConfig()
     {
@@ -129,16 +143,32 @@ class LikeButtonPostType extends Model
         );
     }
 
+    /**
+     * Get enable
+     * 
+     * @return boolean
+     */
     public function getEnable()
     {
         return $this->enable;
     }
 
+    /**
+     * Get position
+     * 
+     * @return string
+     */
     public function getPosition()
     {
         return $this->position;
     }
 
+    /**
+     * Set enable
+     * 
+     * @param boolean $enable
+     * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType
+     */
     public function setEnable($enable)
     {
         $this->enable = $enable;
@@ -146,6 +176,12 @@ class LikeButtonPostType extends Model
         return $this;
     }
 
+    /**
+     * Set position
+     * 
+     * @param boolean $position
+     * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType
+     */
     public function setPosition($position)
     {
         $this->position = $position;
@@ -153,12 +189,23 @@ class LikeButtonPostType extends Model
         return $this;
     }
 
+    /**
+     * Get redefine
+     * 
+     * @return boolean
+     */
     public function getRedefine()
     {
         return $this->redefine;
     }
 
-    public function setRedefine(\AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $redefine)
+    /**
+     * Set redefine
+     * 
+     * @param boolean $redefine
+     * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType
+     */
+    public function setRedefine($redefine)
     {
         $this->redefine = $redefine;
 

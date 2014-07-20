@@ -1,27 +1,35 @@
 <?php
 
+
+/**
+ * Facebook AWD
+ *
+ * This file is part of the facebook AWD package
+ * 
+ */
+
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
 use AHWEBDEV\Framework\Controller\Controller as BaseController;
 
-/*
- * This file is part of FacebookAWD.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * SettingsController
+ * FacebookAWD Like Button FrontController
  *
- * @author Alexandre Hermann <hermann.alexandren@ahwebdev.fr>
- * @package FacebookAWD\Extension\Wordpress
+ * This file is the front controller
+ * 
+ * @subpackage   FacebookAWDLikeButton
+ * @package   FacebookAWD
+ * @category     Extension
+ * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class FrontController extends BaseController
 {
 
+    /**
+     * {@inheritdoc}
+     */
     public function init()
     {
         $assets = $this->container->getRoot()->getAssets();
@@ -52,6 +60,7 @@ class FrontController extends BaseController
 
     /**
      * Helpers to get a likeButton from postType configuration
+     * 
      * @param  WP_Post                    $post
      * @return boolean|LikeButtonPostType
      */
@@ -78,8 +87,9 @@ class FrontController extends BaseController
     }
 
     /**
-     *
-     * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
+     * Render the Like Button
+     * 
+     * @param  LikeButton $likeButton
      * @return string
      */
     public function renderLikeButton(LikeButton $likeButton)
@@ -90,8 +100,9 @@ class FrontController extends BaseController
     }
 
     /**
-     *
-     * @param  \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton $likeButton
+     * Parse Like Button the shortcode
+     * 
+     * @param  LikeButton $likeButton
      * @return string
      */
     public function shortcodeLikeButton($options, $content = null)
@@ -111,7 +122,8 @@ class FrontController extends BaseController
     }
 
     /**
-     * Add the like buntton on content
+     * Adds the like buntton on content
+     * 
      * @param  string $content
      * @return string
      */
@@ -152,6 +164,13 @@ class FrontController extends BaseController
         return implode('', $contents);
     }
 
+    /**
+     * Convert underscored string by camel case
+     * 
+     * @todo Move this method to an utility class
+     * @param string $string
+     * @return string
+     */
     public static function underscoreToCC($string)
     {
         return lcfirst(preg_replace("/ /", "", ucwords(preg_replace("/_/", " ", $string))));

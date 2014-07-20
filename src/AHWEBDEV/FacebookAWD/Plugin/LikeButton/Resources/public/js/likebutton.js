@@ -16,6 +16,4 @@
 jQuery(window).on('facebookAwd_ready', function(e, facebookAwd) {
     var LikeButton = facebookAwd.LikeButton;
     var likebutton = new facebookAwd.LikeButton();
-    console.log(facebookAwd);
-    //likebutton.bindEvents();
 });

@@ -1,81 +1,95 @@
 <?php
 
+/**
+ * Facebook AWD
+ *
+ * This file is part of the facebook AWD package
+ * 
+ */
+
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model;
 
 use AHWEBDEV\Framework\Model\Model;
 
-/*
- * This file is part of FacebookAWD.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * LikeButtonPostType
+ * FacebookAWD Like Button Model
  *
- * @author Alexandre Hermann <hermann.alexandren@ahwebdev.fr>
- * @package FacebookAWD
+ * This file is the Facebook LikeButton Model
+ * 
+ * @subpackage   FacebookAWDLikeButton
+ * @package   FacebookAWD
+ * @category     Extension
+ * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class LikeButton extends Model
 {
 
     /**
-     *
+     * Href
+     * 
      * @var string
      */
     protected $href;
 
     /**
-     *
+     * Action
+     * 
      * @var string
      */
     protected $action;
 
     /**
-     *
+     * Layout
+     * 
      * @var string
      */
     protected $layout;
 
     /**
-     *
+     * Share
+     * 
      * @var string
      */
     protected $share;
 
     /**
-     *
+     * Width
+     * 
      * @var string
      */
     protected $width;
 
     /**
-     *
+     * Colorscheme
+     *  
      * @var string
      */
     protected $colorscheme;
 
     /**
-     *
+     * Kid directed site
+     * 
      * @var string
      */
     protected $kidDirectedSite;
 
     /**
-     *
+     * Ref
+     * 
      * @var string
      */
     protected $ref;
 
     /**
-     *
+     * Show faces
+     * 
      * @var string
      */
     protected $showFaces;
 
     /**
-     *
+     * Get href
+     * 
      * @return string
      */
     public function getHref()
@@ -84,7 +98,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get action
+     * 
      * @return string
      */
     public function getAction()
@@ -93,7 +108,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get layout
+     * 
      * @return string
      */
     public function getLayout()
@@ -102,7 +118,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get share
+     * 
      * @return string
      */
     public function getShare()
@@ -111,7 +128,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get action
+     * 
      * @return string
      */
     public function getWidth()
@@ -120,7 +138,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get colorscheme
+     * 
      * @return string
      */
     public function getColorscheme()
@@ -129,7 +148,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get kid directed site
+     * 
      * @return string
      */
     public function getKidDirectedSite()
@@ -138,7 +158,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get ref
+     * 
      * @return string
      */
     public function getRef()
@@ -147,7 +168,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Get show faces
+     * 
      * @return string
      */
     public function getShowFaces()
@@ -156,7 +178,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set href
+     * 
      * @param  string                                                   $href
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -168,7 +191,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set action
+     * 
      * @param  string                                                   $action
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -180,7 +204,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set layout
+     * 
      * @param  string                                                   $layout
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -192,7 +217,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set share
+     * 
      * @param  string                                                   $share
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -204,7 +230,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set width
+     * 
      * @param  string                                                   $width
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -216,7 +243,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set colorscheme
+     * 
      * @param  string                                                   $colorscheme
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -228,7 +256,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set Kid directed site
+     * 
      * @param  string                                                   $kidDirectedSite
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -240,7 +269,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set ref
+     * 
      * @param  string                                                   $ref
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -252,7 +282,8 @@ class LikeButton extends Model
     }
 
     /**
-     *
+     * Set show faces
+     * 
      * @param  string                                                   $showFaces
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -264,8 +295,7 @@ class LikeButton extends Model
     }
 
     /**
-     *
-     * @return type
+     * {@inheritdoc}
      */
     protected function getDefaultFormConfig()
     {

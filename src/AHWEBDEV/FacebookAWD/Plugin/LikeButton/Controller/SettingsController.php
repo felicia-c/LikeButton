@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * Facebook AWD
+ *
+ * This file is part of the facebook AWD package
+ * 
+ */
+
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
@@ -11,25 +18,21 @@ use AHWEBDEV\Wordpress\Widget\Widget;
 use RuntimeException;
 use stdClass;
 
-/*
- * This file is part of FacebookAWD.
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 /**
- * SettingsController
+ * FacebookAWD Like Button SettingsController
  *
- * @author Alexandre Hermann <hermann.alexandren@ahwebdev.fr>
- * @package FacebookAWD\Extension\Wordpress
+ * This file is the setting controller
+ * 
+ * @subpackage   FacebookAWDLikeButton
+ * @package   FacebookAWD
+ * @category     Extension
+ * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class SettingsController extends BaseController implements MetaboxInterface
 {
 
     /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getMenuType()
     {
@@ -37,8 +40,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getMenuSlug()
     {
@@ -46,8 +48,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
-     * @return string
+     * {@inheritdoc}
      */
     public function getMenuTitle()
     {
@@ -55,8 +56,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Init the controller
-     * Add an wordpress action to create the admin menu/submenu page
+     * {@inheritdoc}
      */
     public function init()
     {
@@ -82,7 +82,9 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
+     * Register widgets
+     * 
+     * @todo Add an interface to call this method automatically
      * @global \WP_Widget_Factory $wp_widget_factory
      */
     public function registerWidgets()
@@ -101,8 +103,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
-     * @param string $pageHook
+     * {@inheritdoc}
      */
     public function addMetaBoxes($pageHook)
     {
@@ -145,7 +146,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Return index content
+     * Create the index page
      */
     public function index()
     {
@@ -172,7 +173,11 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
+     * Render the like Button settgins section
+     * 
+     * This method is called by meta boxes in admin of plugin
+     * and in the post types edition pages
+     * 
      * @param  stdClass           $postType
      * @param  LikeButtonPostType $likeButtonPostType
      * @param  null|WP_Post       $post
@@ -180,6 +185,11 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function settingsSection($postType, $likeButtonPostType, $post = null)
     {
+
+        if (!$postType) {
+            throw new \InvalidArgumentException('The $postType arg is required for settingsSection');
+        }
+
         $om = $this->container->getRoot()->get('services.option_manager');
         $form = new Form($this->container->getSlug());
 
@@ -237,7 +247,8 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Wrap a section into metaboes
+     * Wrap a section into a metabox
+     * 
      * @param $post
      * @param  array            $metaboxData
      * @throws RuntimeException
@@ -248,7 +259,14 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     *
+     * Handle the post of the settings section
+     * 
+     * This method works for each post types.
+     * The configuration will be save on post directly (if set from post/page editor)
+     * Or saved into the plugin configuration related to each post type.
+     * 
+     * @param integer|null $postId
+     * @return void
      */
     public function handlesSettingsSection($postId = null)
     {
@@ -277,7 +295,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                                 return;
                             }
 
-                            $postTypeName = str_replace($this->container->getSlug() . '_posttype_', '', $key);
+                            $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
                             $om = $this->container->getRoot()->get('services.option_manager');
                             $om->save('options.' . $this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
                             $om->save('fawd_application_' . $this->container->getSlug() . '_success_' . $postTypeName, 'Settings were updated with success');

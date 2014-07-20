@@ -1,5 +1,11 @@
-<?php
+<?php 
 
+/**
+ * Facebook AWD
+ *
+ * This file is part of the facebook AWD package
+ * 
+ */
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\FrontController;
@@ -7,10 +13,14 @@ use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
 use AHWEBDEV\Framework\Plugin\Plugin;
 
 /**
- * Facebook AWD LikeButton
+ * FacebookAWD Like Button
  *
- * @package FacebookAWD
- * @author AHWEBDEV (Alexandre Hermann) [hermann.alexandre@ahwebev.fr]
+ * This file is the base container of the Facebook AWD LikeButton extension
+ * 
+ * @subpackage   FacebookAWDLikeButton
+ * @package   FacebookAWD
+ * @category     Extension
+ * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class LikeButtonPlugin extends Plugin
 {
@@ -28,6 +38,9 @@ class LikeButtonPlugin extends Plugin
         add_action('facebookawd_register_plugins', array($this, 'init'));
     }
 
+    /**
+     * {@ineritdoc}
+     */
     public function boot()
     {
         $settingsController = new SettingsController($this, $this->container->get('admin'));
@@ -36,6 +49,9 @@ class LikeButtonPlugin extends Plugin
         $this->set('front.controller', $frontController);
     }
 
+    /**
+     * Init the controllers of the plugin
+     */
     public function initControllers()
     {
         $this->get('backend.controller')->init();
