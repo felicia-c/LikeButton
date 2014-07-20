@@ -25,18 +25,7 @@ use AHWEBDEV\Wordpress\Plugin\Plugin;
  */
 class LikeButtonPlugin extends Plugin
 {
-
-    /**
-     * Constructor
-     * 
-     * @param string $pluginFile The that contains data
-     */
-    public function __construct($pluginFile = null)
-    {
-        parent::__construct($pluginFile);
-        add_action('facebookawd_register_plugins', array($this, 'init'));
-    }
-
+    
     /**
      * {@ineritdoc}
      */
