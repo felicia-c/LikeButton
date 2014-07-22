@@ -214,7 +214,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                 'data-hide-on' => '.section_likeButtonPostTypeOptions'
             );
             $redefineFormConfig = array('redefine' => $likeButtonPostTypeFormConfig['redefine']);
-            $sections['redefine'] = $form->proccessFields('posttype_' . $postType->name, $redefineFormConfig);
+            $sections['redefine'] = $form->processFields('posttype_' . $postType->name, $redefineFormConfig);
         }
 
         //remove this field, he is only required on post edition.
@@ -230,15 +230,16 @@ class SettingsController extends BaseController implements MetaboxInterface
 
         //the section
         $sections['likeButtonPostTypeOptions'] = array(
-            'enable' => $form->proccessFields('posttype_' . $postType->name, $enableFormConfig),
-            'likeButtonPostType' => $form->proccessFields('posttype_' . $postType->name, $likeButtonPostTypeFormConfig),
-            'likeButton' => $form->proccessFields('posttype_' . $postType->name, $likeButtonPostType->getLikeButton()->getFormConfig())
+            'enable' => $form->processFields('posttype_' . $postType->name, $enableFormConfig),
+            'likeButtonPostType' => $form->processFields('posttype_' . $postType->name, $likeButtonPostTypeFormConfig),
+            'likeButton' => $form->processFields('posttype_' . $postType->name, $likeButtonPostType->getLikeButton()->getFormConfig())
         );
-        $sections['security'] = $form->proccessFields('posttype_' . $postType->name, $this->container->getRoot()->getTokenFormConfig());
+        $sections['security'] = $form->processFields('posttype_' . $postType->name, $this->container->getRoot()->getTokenFormConfig());
 
-        $template = $this->container->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
+        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
 
         return $this->render($template, array(
+                    'classes' => 'posttype_section '.$postType->name,
                     'withSubmit' => !$post,
                     'postTypeName' => $postType->name,
                     'sections' => $sections,
