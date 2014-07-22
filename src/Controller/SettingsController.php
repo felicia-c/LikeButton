@@ -15,8 +15,11 @@ use AHWEBDEV\Framework\TemplateManager\Form;
 use AHWEBDEV\Wordpress\Admin\MetaboxInterface;
 use AHWEBDEV\Wordpress\Controller\AdminMenuController as BaseController;
 use AHWEBDEV\Wordpress\Widget\Widget;
+use InvalidArgumentException;
 use RuntimeException;
 use stdClass;
+use WP_Post;
+use WP_Widget_Factory;
 
 /**
  * FacebookAWD Like Button SettingsController
@@ -85,7 +88,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      * Register widgets
      * 
      * @todo Add an interface to call this method automatically
-     * @global \WP_Widget_Factory $wp_widget_factory
+     * @global WP_Widget_Factory $wp_widget_factory
      */
     public function registerWidgets()
     {
@@ -187,7 +190,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     {
 
         if (!$postType) {
-            throw new \InvalidArgumentException('The $postType arg is required for settingsSection');
+            throw new InvalidArgumentException('The $postType arg is required for settingsSection');
         }
 
         $om = $this->container->getRoot()->get('services.option_manager');

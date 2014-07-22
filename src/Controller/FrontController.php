@@ -13,6 +13,7 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
 use AHWEBDEV\Framework\Controller\Controller as BaseController;
+use WP_Post;
 
 /**
  * FacebookAWD Like Button FrontController

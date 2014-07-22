@@ -88,7 +88,7 @@ class LikeButtonPostType extends Model
     public function __construct()
     {
         if (!$this->likeButton) {
-            $this->likeButton = new LikeButton();
+            $this->likeButton = new \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton();
         }
     }
 
