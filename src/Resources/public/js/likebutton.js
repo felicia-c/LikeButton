@@ -1,19 +1,20 @@
 /*
+ * Facebook AWD helpers
  * 
- * Like Button Admin Helpers
+ * LikeButton
  */
-(function(FacebookAwd) {
+(function(FacebookAWD) {
 
     /**
      * Like Button Admin Helpers
      */
-    FacebookAwd.prototype.LikeButton = function() {
+    FacebookAWD.prototype.LikeButton = function() {
 
     };
 
-})(FacebookAwd);
+})(FacebookAWD);
 
-jQuery(window).on('facebookAwd_ready', function(e, facebookAwd) {
-    var LikeButton = facebookAwd.LikeButton;
-    var likebutton = new facebookAwd.LikeButton();
+jQuery(window).on('FacebookAWD_ready', function(e, FacebookAWD) {
+    var LikeButton = FacebookAWD.LikeButton;
+    var likebutton = new FacebookAWD.LikeButton();
 });

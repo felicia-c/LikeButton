@@ -1,13 +1,14 @@
 /*
+ * Facebook AWD Admin helpers
  * 
- * Like Button Admin Helpers
+ * LikeButton
  */
-(function(FacebookAwdAdmin) {
+(function(FacebookAWDAdmin) {
 
     /**
      * Like Button Admin Helpers
      */
-    FacebookAwdAdmin.prototype.LikeButton = function() {
+    FacebookAWDAdmin.prototype.LikeButton = function() {
 
         var $ = jQuery;
         var likeButton = this;
@@ -33,7 +34,7 @@
          * @returns {void}
          */
         this.submitPostTypeSettingsForm = function($form) {
-            var data = $form.serialize() + '&action=save_settings_facebookawdlikebutton';
+            var data = $form.serialize() + '&action=save_settings_FacebookAWDlikebutton';
             $.post(ajaxurl, data, function(data) {
                 $('.posttype_section.' + data.postTypeName).replaceWith(data.section);
                 var $newSection = $('.posttype_section.' + data.postTypeName);
@@ -45,10 +46,10 @@
         };
     };
 
-})(FacebookAwdAdmin);
+})(FacebookAWDAdmin);
 
-jQuery(window).on('facebookAwdAdmin_ready', function(e, facebookAwdAdmin) {
-    var LikeButton = facebookAwdAdmin.LikeButton;
-    var likebutton = new facebookAwdAdmin.LikeButton();
+jQuery(window).on('FacebookAWDAdmin_ready', function(e, FacebookAWDAdmin) {
+    var LikeButton = FacebookAWDAdmin.LikeButton;
+    var likebutton = new FacebookAWDAdmin.LikeButton();
     likebutton.bindEvents();
 });
