@@ -32,9 +32,9 @@ class LikeButtonPlugin extends Plugin
     public function boot()
     {
         $settingsController = new SettingsController($this, $this->container->get('admin'));
-        $this->set('backend.controller', $settingsController);
+        $this->set('controller.backend', $settingsController);
         $frontController = new FrontController($this);
-        $this->set('front.controller', $frontController);
+        $this->set('controller.front', $frontController);
     }
 
     /**
@@ -42,8 +42,8 @@ class LikeButtonPlugin extends Plugin
      */
     public function initControllers()
     {
-        $this->get('backend.controller')->init();
-        $this->get('front.controller')->init();
+        $this->get('controller.backend')->init();
+        $this->get('controller.front')->init();
     }
 
 }

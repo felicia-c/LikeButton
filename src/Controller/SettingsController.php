@@ -100,7 +100,7 @@ class SettingsController extends BaseController implements MetaboxInterface
             'description' => $this->container->getTitle(),
             'ptd' => $this->container->getPtd(),
             'model' => 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton',
-            'selfCallback' => array($this->container->get('front.controller'), 'renderLikeButton'),
+            'selfCallback' => array($this->container->get('controller.front'), 'renderLikeButton'),
             'preview' => true
         ));
     }
@@ -111,7 +111,7 @@ class SettingsController extends BaseController implements MetaboxInterface
     public function addMetaBoxes($pageHook)
     {
         $pageHook = $this->admin->getAdminMenuHook($this->container->getSlug());
-        $adminController = $this->container->getRoot()->get('backend.controller');
+        $adminController = $this->container->getRoot()->get('controller.backend');
         $om = $this->container->getRoot()->get('services.option_manager');
 
         //Default metaboxes
