@@ -1,20 +1,26 @@
-/*
- * Facebook AWD helpers
+/**
+ * FacebookAWDLikeButton
  * 
- * LikeButton
+ * @returns {void}
  */
-(function(FacebookAWD) {
+var FacebookAWDLikeButton = function() {
+    this.parent = facebookAWD;
+};
 
-    /**
-     * Like Button Admin Helpers
-     */
-    FacebookAWD.prototype.LikeButton = function() {
-
-    };
-
+/**
+ * Anonymous registering the module on global namespace
+ * 
+ * @param {FacebookAWD} f
+ * @returns {void}
+ */
+(function(f) {
+    f.prototype.LikeButton = FacebookAWDLikeButton;
 })(FacebookAWD);
 
-jQuery(window).on('FacebookAWD_ready', function(e, FacebookAWD) {
-    var LikeButton = FacebookAWD.LikeButton;
-    var likebutton = new FacebookAWD.LikeButton();
+/**
+ * Init
+ */
+jQuery(window).on('FacebookAWD_ready', function(e, facebookAWD) {
+    facebookAWD.likeButton = new facebookAWD.LikeButton();
+    console.log(facebookAWD);
 });
