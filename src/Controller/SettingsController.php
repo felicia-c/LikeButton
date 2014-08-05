@@ -85,6 +85,17 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function adminMenu()
+    {
+        parent::adminMenu();
+
+        //add the like button boxes to the post.php
+        add_action('load-post.php', array($this, 'loadMetaboxes'));
+    }
+
+    /**
      * Register widgets
      * 
      * @todo Add an interface to call this method automatically
@@ -110,7 +121,6 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function addMetaBoxes($pageHook)
     {
-        $pageHook = $this->admin->getAdminMenuHook($this->container->getSlug());
         $adminController = $this->container->getRoot()->get('controller.backend');
         $om = $this->container->getRoot()->get('services.option_manager');
 
@@ -125,6 +135,7 @@ class SettingsController extends BaseController implements MetaboxInterface
             if (!is_object($likeButtonPosType)) {
                 $likeButtonPosType = new LikeButtonPostType();
             }
+
             //facebookawd admin
             add_meta_box($this->container->getSlug() . $postType->name, $postType->labels->name, array($this, 'settingsBoxes'), $pageHook, 'normal', 'default', array($postType, $likeButtonPosType));
 
@@ -242,7 +253,7 @@ class SettingsController extends BaseController implements MetaboxInterface
         $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
 
         return $this->render($template, array(
-                    'classes' => 'posttype_section '.$postType->name,
+                    'classes' => 'section ' . $postType->name,
                     'withSubmit' => !$post,
                     'postTypeName' => $postType->name,
                     'sections' => $sections,
