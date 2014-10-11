@@ -9,7 +9,6 @@
 
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
 use AHWEBDEV\Framework\TemplateManager\Form;
 use AHWEBDEV\Wordpress\Admin\MetaboxInterface;
@@ -122,7 +121,6 @@ class SettingsController extends BaseController implements MetaboxInterface
     public function addMetaBoxes($pageHook)
     {
         $adminController = $this->container->getRoot()->get('controller.backend');
-        $om = $this->container->getRoot()->get('services.option_manager');
 
         //Default metaboxes
         $adminController->addMetaboxes($pageHook);
@@ -131,23 +129,15 @@ class SettingsController extends BaseController implements MetaboxInterface
         //post types metaboxes
         $postTypes = get_post_types(array('public' => true), 'objects');
         foreach ($postTypes as $postType) {
-            $likeButtonPosType = $om->load('options.' . $this->container->getSlug() . '.' . $postType->name);
-            if (!is_object($likeButtonPosType)) {
-                $likeButtonPosType = new LikeButtonPostType();
-            }
-
             //facebookawd admin
-            add_meta_box($this->container->getSlug() . $postType->name, $postType->labels->name, array($this, 'settingsBoxes'), $pageHook, 'normal', 'default', array($postType, $likeButtonPosType));
+            add_meta_box($this->container->getSlug() . $postType->name, 'On ' . strtolower($postType->labels->name), array($this, 'settingsBoxes'), $pageHook, 'normal', 'default', array($postType));
 
             //post type pages
-            if (is_object($likeButtonPosType)) {
-                //$likeButtonPosType->setEnable(0);
-                add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
-                add_action('admin_print_styles-post.php', array($this->admin, 'enqueueScripts'));
-                add_action('save_post', array($this, 'handlesSettingsSection'));
-                add_action('edit_attachment', array($this, 'handlesSettingsSection'));
-                add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType, $likeButtonPosType));
-            }
+            add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
+            add_action('admin_print_styles-post.php', array($this->admin, 'enqueueScripts'));
+            add_action('save_post', array($this, 'handlesSettingsSection'));
+            add_action('edit_attachment', array($this, 'handlesSettingsSection'));
+            add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType));
         }
     }
 
@@ -197,7 +187,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      * @param  null|WP_Post       $post
      * @return string
      */
-    public function settingsSection($postType, $likeButtonPostType, $post = null)
+    public function settingsSection($postType, $post = null)
     {
 
         if (!$postType) {
@@ -205,10 +195,16 @@ class SettingsController extends BaseController implements MetaboxInterface
         }
 
         $om = $this->container->getRoot()->get('services.option_manager');
+
+        $likeButtonPostType = $om->load('options.' . $this->container->getSlug() . '.' . $postType->name);
+        if (!is_object($likeButtonPostType)) {
+            $likeButtonPostType = new LikeButtonPostType();
+        }
+
         $form = new Form($this->container->getSlug());
 
-        $success = $om->load('fawd_application_' . $this->container->getSlug() . '_success_' . $postType->name);
-        $om->save('fawd_application_' . $this->container->getSlug() . '_success_' . $postType->name, false);
+        $success = $om->load($this->container->getSlug() . '_' . $postType->name . '_success' . $postType->name);
+        $om->save($this->container->getSlug() . '_' . $postType->name . '_success', false);
 
         //default instance and config
         $likeButtonPostTypeFormConfig = $likeButtonPostType->getFormConfig();
@@ -230,8 +226,7 @@ class SettingsController extends BaseController implements MetaboxInterface
             $redefineFormConfig = array('redefine' => $likeButtonPostTypeFormConfig['redefine']);
             $sections['redefine'] = $form->processFields('posttype_' . $postType->name, $redefineFormConfig);
         }
-
-        //remove this field, he is only required on post edition.
+        //remove this field, he is only required on post edition and already rendered
         unset($likeButtonPostTypeFormConfig['redefine']);
 
         //enable section
@@ -250,15 +245,15 @@ class SettingsController extends BaseController implements MetaboxInterface
         );
         $sections['security'] = $form->processFields('posttype_' . $postType->name, $this->container->getRoot()->getTokenFormConfig());
 
-        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
+        $data = array('classes' => 'posttype_section section ' . $postType->name,
+            'withSubmit' => !$post,
+            'postTypeName' => $postType->name,
+            'sections' => $sections,
+            'success' => $success
+        );
 
-        return $this->render($template, array(
-                    'classes' => 'section ' . $postType->name,
-                    'withSubmit' => !$post,
-                    'postTypeName' => $postType->name,
-                    'sections' => $sections,
-                    'success' => $success
-        ));
+        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
+        return $this->render($template, $data);
     }
 
     /**
@@ -270,7 +265,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function settingsBoxes($post, array $metaboxData)
     {
-        echo $this->settingsSection($metaboxData['args'][0], $metaboxData['args'][1], $post);
+        echo $this->settingsSection($metaboxData['args'][0], $post);
     }
 
     /**
@@ -290,14 +285,13 @@ class SettingsController extends BaseController implements MetaboxInterface
             foreach ($request as $key => $postTypeRequest) {
                 if (preg_match('/' . $this->container->getSlug() . 'posttype/', $key)) {
                     if (is_array($postTypeRequest)) {
-                        //echo "<pre>" . print_r($postTypeRequest, true) . "</pre>";
                         $isTokenValid = wp_verify_nonce($postTypeRequest['token'], 'fawd-token');
                         if ($isTokenValid) {
-                            $likeButton = new LikeButton();
-                            $likeButton->bind($postTypeRequest);
+
                             $likeButtonPostType = new LikeButtonPostType();
                             $likeButtonPostType->bind($postTypeRequest);
-                            $likeButtonPostType->setLikeButton($likeButton);
+                            $likeButton = $likeButtonPostType->getLikeButton();
+                            $likeButton->bind($postTypeRequest);
 
                             //save meta to post if redefine is used.
                             if (isset($postTypeRequest['redefine']) && $postId) {
@@ -313,7 +307,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                             $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
                             $om = $this->container->getRoot()->get('services.option_manager');
                             $om->save('options.' . $this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
-                            $om->save('fawd_application_' . $this->container->getSlug() . '_success_' . $postTypeName, 'Settings were updated with success');
+                            $om->save($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
                             if ($this->isAjaxRequest()) {
                                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
                                 echo $this->render($template, array(

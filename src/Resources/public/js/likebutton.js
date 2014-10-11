@@ -22,5 +22,4 @@ var FacebookAWDLikeButton = function() {
  */
 jQuery(window).on('FacebookAWD_ready', function(e, facebookAWD) {
     facebookAWD.likeButton = new facebookAWD.LikeButton();
-    console.log(facebookAWD);
 });

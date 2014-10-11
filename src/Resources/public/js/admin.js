@@ -34,11 +34,12 @@
          * @returns {void}
          */
         this.submitPostTypeSettingsForm = function($form) {
+            //return false;
             var data = $form.serialize() + '&action=save_settings_facebookawdlikebutton';
             $.post(ajaxurl, data, function(data) {
                 $('.posttype_section.' + data.postTypeName).replaceWith(data.section);
                 var $newSection = $('.posttype_section.' + data.postTypeName);
-                $('.hideIfOn').trigger('change');
+                $('.hideIfOn').trigger('change', {direct: 1});
                 $('html, body').animate({
                     scrollTop: $newSection.offset().top - 40
                 });
