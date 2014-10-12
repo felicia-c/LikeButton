@@ -155,10 +155,11 @@ class SettingsController extends BaseController implements MetaboxInterface
     public function index()
     {
         $this->handlesSettingsSection();
+        $application = $this->container->getRoot()->get('services.option_manager')->get('options.application');
         $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/metaboxes.html.php';
         echo $this->render($template, array(
             'title' => $this->container->getTitle() . ' <a class="button-secondary" href="?page=' . $this->container->getRoot()->getSlug() . '">Back</a>',
-            'application' => $this->container->getRoot()->get('services.application'),
+            'application' => $application,
             'args' => array(),
             'boxes' => array(
                 array(
@@ -174,6 +175,18 @@ class SettingsController extends BaseController implements MetaboxInterface
                 )
             )
         ));
+    }
+
+    /**
+     * Wrap a section into a metabox
+     * 
+     * @param $post
+     * @param  array            $metaboxData
+     * @throws RuntimeException
+     */
+    public function settingsBoxes($post, array $metaboxData)
+    {
+        echo $this->settingsSection($metaboxData['args'][0], $post);
     }
 
     /**
@@ -196,15 +209,15 @@ class SettingsController extends BaseController implements MetaboxInterface
 
         $om = $this->container->getRoot()->get('services.option_manager');
 
-        $likeButtonPostType = $om->load('options.' . $this->container->getSlug() . '.' . $postType->name);
+        $likeButtonPostType = $om->get($this->container->getSlug() . '.' . $postType->name);
         if (!is_object($likeButtonPostType)) {
             $likeButtonPostType = new LikeButtonPostType();
         }
 
         $form = new Form($this->container->getSlug());
 
-        $success = $om->load($this->container->getSlug() . '_' . $postType->name . '_success' . $postType->name);
-        $om->save($this->container->getSlug() . '_' . $postType->name . '_success', false);
+        $success = $om->get($this->container->getSlug() . '_' . $postType->name . '_success');
+        $om->set($this->container->getSlug() . '_' . $postType->name . '_success', false);
 
         //default instance and config
         $likeButtonPostTypeFormConfig = $likeButtonPostType->getFormConfig();
@@ -257,18 +270,6 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Wrap a section into a metabox
-     * 
-     * @param $post
-     * @param  array            $metaboxData
-     * @throws RuntimeException
-     */
-    public function settingsBoxes($post, array $metaboxData)
-    {
-        echo $this->settingsSection($metaboxData['args'][0], $post);
-    }
-
-    /**
      * Handle the post of the settings section
      * 
      * This method works for each post types.
@@ -306,13 +307,13 @@ class SettingsController extends BaseController implements MetaboxInterface
 
                             $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
                             $om = $this->container->getRoot()->get('services.option_manager');
-                            $om->save('options.' . $this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
-                            $om->save($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
+                            $om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
+                            $om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');                            
                             if ($this->isAjaxRequest()) {
                                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
                                 echo $this->render($template, array(
-                                    'postTypeName' => $postTypeName,
-                                    'section' => $this->settingsSection(get_post_type_object($postTypeName), $likeButtonPostType)
+                                    'sectionClass' => $postTypeName,
+                                    'section' => $this->settingsSection(get_post_type_object($postTypeName))
                                 ));
                                 exit;
                             }

@@ -70,7 +70,7 @@ class FrontController extends BaseController
         $postType = get_post_type_object($post->post_type);
         //get the configuation
         $om = $this->container->getRoot()->get('services.option_manager');
-        $likeButtonPosType = $om->load('options.' . $this->container->getSlug() . '.' . $postType->name);
+        $likeButtonPosType = $om->get('options.' . $this->container->getSlug() . '.' . $postType->name);
         $likeButtonPostTypeFromPost = get_post_meta($post->ID, $this->container->getSlug() . '_posttype', true);
 
         if (is_object($likeButtonPostTypeFromPost)) {

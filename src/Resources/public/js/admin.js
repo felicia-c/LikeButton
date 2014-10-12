@@ -21,29 +21,18 @@
             /*
              * Listen the settings post type form
              */
-            var $postTypeSettingsForm = $(' .posttype_section form');
-            $(document).on('submit', '.posttype_section form', function(e) {
-                e.preventDefault();
-                likeButton.submitPostTypeSettingsForm($(e.target));
-            });
-        };
+            var forms = [{
+                    classes: '.section.posttype_section form',
+                    action: 'save_settings_facebookawdlikebutton'
+                }
+            ];
 
-        /**
-         * Submit the settings form
-         * @param {Object} $form
-         * @returns {void}
-         */
-        this.submitPostTypeSettingsForm = function($form) {
-            //return false;
-            var data = $form.serialize() + '&action=save_settings_facebookawdlikebutton';
-            $.post(ajaxurl, data, function(data) {
-                $('.posttype_section.' + data.postTypeName).replaceWith(data.section);
-                var $newSection = $('.posttype_section.' + data.postTypeName);
-                $('.hideIfOn').trigger('change', {direct: 1});
-                $('html, body').animate({
-                    scrollTop: $newSection.offset().top - 40
+            $.each(forms, function(index, form) {
+                $(document).on('submit', form.classes, function(e) {
+                    e.preventDefault();
+                    likeButton.parent.submitSettingsForm($(e.target), form.action);
                 });
-            }, 'json');
+            });
         };
     };
 
@@ -51,5 +40,6 @@
 
 jQuery(window).on('FacebookAWDAdmin_ready', function(e, facebookAWDAdmin) {
     facebookAWDAdmin.likebutton = new facebookAWDAdmin.LikeButton();
+    facebookAWDAdmin.likebutton.parent = facebookAWDAdmin;
     facebookAWDAdmin.likebutton.bindEvents();
 });
