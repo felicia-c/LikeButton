@@ -46,7 +46,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function getMenuSlug()
     {
-        return $this->container->getRoot()->getSlug();
+        return $this->container->getSlug();
     }
 
     /**
@@ -131,13 +131,13 @@ class SettingsController extends BaseController implements MetaboxInterface
         foreach ($postTypes as $postType) {
             //facebookawd admin
             add_meta_box($this->container->getSlug() . $postType->name, 'On ' . strtolower($postType->labels->name), array($this, 'settingsBoxes'), $pageHook, 'normal', 'default', array($postType));
+            add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType));
 
             //post type pages
             add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
             add_action('admin_print_styles-post.php', array($this->admin, 'enqueueScripts'));
             add_action('save_post', array($this, 'handlesSettingsSection'));
             add_action('edit_attachment', array($this, 'handlesSettingsSection'));
-            add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType));
         }
     }
 
@@ -308,7 +308,7 @@ class SettingsController extends BaseController implements MetaboxInterface
                             $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
                             $om = $this->container->getRoot()->get('services.option_manager');
                             $om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
-                            $om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');                            
+                            $om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
                             if ($this->isAjaxRequest()) {
                                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
                                 echo $this->render($template, array(
