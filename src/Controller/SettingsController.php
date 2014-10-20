@@ -9,10 +9,10 @@
 
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
+use AHWEBDEV\FacebookAWD\Controller\AdminMenuController as BaseController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
 use AHWEBDEV\Framework\TemplateManager\Form;
 use AHWEBDEV\Wordpress\Admin\MetaboxInterface;
-use AHWEBDEV\Wordpress\Controller\AdminMenuController as BaseController;
 use AHWEBDEV\Wordpress\Widget\Widget;
 use InvalidArgumentException;
 use RuntimeException;
@@ -207,17 +207,15 @@ class SettingsController extends BaseController implements MetaboxInterface
             throw new InvalidArgumentException('The $postType arg is required for settingsSection');
         }
 
-        $om = $this->container->getRoot()->get('services.option_manager');
-
-        $likeButtonPostType = $om->get($this->container->getSlug() . '.' . $postType->name);
+        $likeButtonPostType = $this->om->get($this->container->getSlug() . '.' . $postType->name);
         if (!is_object($likeButtonPostType)) {
             $likeButtonPostType = new LikeButtonPostType();
         }
 
         $form = new Form($this->container->getSlug());
 
-        $success = $om->get($this->container->getSlug() . '_' . $postType->name . '_success');
-        $om->set($this->container->getSlug() . '_' . $postType->name . '_success', false);
+        $success = $this->om->get($this->container->getSlug() . '_' . $postType->name . '_success');
+        $this->om->set($this->container->getSlug() . '_' . $postType->name . '_success', false);
 
         //default instance and config
         $likeButtonPostTypeFormConfig = $likeButtonPostType->getFormConfig();
@@ -306,9 +304,8 @@ class SettingsController extends BaseController implements MetaboxInterface
                             }
 
                             $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
-                            $om = $this->container->getRoot()->get('services.option_manager');
-                            $om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
-                            $om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
+                            $this->om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
+                            $this->om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
                             if ($this->isAjaxRequest()) {
                                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
                                 echo $this->render($template, array(

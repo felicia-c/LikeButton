@@ -12,7 +12,7 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
-use AHWEBDEV\Framework\Controller\Controller as BaseController;
+use AHWEBDEV\FacebookAWD\Controller\Controller as BaseController;
 use WP_Post;
 
 /**
@@ -69,8 +69,7 @@ class FrontController extends BaseController
     {
         $postType = get_post_type_object($post->post_type);
         //get the configuation
-        $om = $this->container->getRoot()->get('services.option_manager');
-        $likeButtonPosType = $om->get('options.' . $this->container->getSlug() . '.' . $postType->name);
+        $likeButtonPosType = $this->om->get('options.' . $this->container->getSlug() . '.' . $postType->name);
         $likeButtonPostTypeFromPost = get_post_meta($post->ID, $this->container->getSlug() . '_posttype', true);
 
         if (is_object($likeButtonPostTypeFromPost)) {
