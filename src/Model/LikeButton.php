@@ -224,7 +224,7 @@ class LikeButton extends Model
      */
     public function setShare($share)
     {
-        $this->share = $share;
+        $this->share = (bool) $share;
 
         return $this;
     }
@@ -258,12 +258,12 @@ class LikeButton extends Model
     /**
      * Set Kid directed site
      * 
-     * @param  string                                                   $kidDirectedSite
+     * @param  boolean                                                   $kidDirectedSite
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setKidDirectedSite($kidDirectedSite)
     {
-        $this->kidDirectedSite = $kidDirectedSite;
+        $this->kidDirectedSite = (bool) $kidDirectedSite;
 
         return $this;
     }
@@ -284,12 +284,12 @@ class LikeButton extends Model
     /**
      * Set show faces
      * 
-     * @param  string                                                   $showFaces
+     * @param  boolean                                                   $showFaces
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
     public function setShowFaces($showFaces)
     {
-        $this->showFaces = $showFaces;
+        $this->showFaces = (bool) $showFaces;
 
         return $this;
     }

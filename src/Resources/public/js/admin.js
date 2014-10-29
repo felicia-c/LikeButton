@@ -3,21 +3,22 @@
  * 
  * LikeButton
  */
-(function(FacebookAWDAdmin) {
+(function (FacebookAWDAdmin) {
 
     /**
      * Like Button Admin Helpers
      */
-    FacebookAWDAdmin.prototype.LikeButton = function() {
+    FacebookAWDAdmin.prototype.LikeButton = function () {
 
         var $ = jQuery;
+        this.parent = facebookAWDAdmin;
         var likeButton = this;
 
         /**
          * BindEvents of objects
          * @returns {void}
          */
-        this.bindEvents = function() {
+        this.bindEvents = function () {
             /*
              * Listen the settings post type form
              */
@@ -27,19 +28,32 @@
                 }
             ];
 
-            $.each(forms, function(index, form) {
-                $(document).on('submit', form.classes, function(e) {
+            $.each(forms, function (index, form) {
+                $(document).on('submit', form.classes, function (e) {
                     e.preventDefault();
                     likeButton.parent.submitSettingsForm($(e.target), form.action);
                 });
+            });
+
+
+            /*
+             * Listen the shortcode generator form
+             */
+            var formShortCodeGenerator = {
+                classes: '.section.shortcode_section form',
+                action: 'shortcode_generator_facebookawdlikebutton'
+            };
+
+            $(document).on('submit', formShortCodeGenerator.classes, function (e) {
+                e.preventDefault();
+                likeButton.parent.submitSettingsForm($(e.target), formShortCodeGenerator.action);
             });
         };
     };
 
 })(FacebookAWDAdmin);
 
-jQuery(window).on('FacebookAWDAdmin_ready', function(e, facebookAWDAdmin) {
+jQuery(window).on('FacebookAWDAdmin_ready', function (e, facebookAWDAdmin) {
     facebookAWDAdmin.likebutton = new facebookAWDAdmin.LikeButton();
-    facebookAWDAdmin.likebutton.parent = facebookAWDAdmin;
     facebookAWDAdmin.likebutton.bindEvents();
 });

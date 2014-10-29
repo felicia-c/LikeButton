@@ -37,7 +37,7 @@ class FrontController extends BaseController
 
         $publicUrl = plugins_url(null, __DIR__) . '/Resources/public';
         $assets['script'][$this->container->getSlug()] = array(
-            'src' => $publicUrl . '/js/likebutton.js',
+            'src' => $publicUrl . '/js/likeButton.js',
             'deps' => array($this->container->getRoot()->getSlug())
         );
         $this->container->getRoot()->setAssets($assets);
