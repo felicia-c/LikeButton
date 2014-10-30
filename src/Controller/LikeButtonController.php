@@ -11,10 +11,14 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
 use AHWEBDEV\Framework\ContainerInterface;
+use AHWEBDEV\Wordpress\Admin\ShortcodeInterface;
+use AHWEBDEV\Wordpress\Admin\WidgetInterface;
 use AHWEBDEV\Wordpress\Controller\Controller;
+use AHWEBDEV\Wordpress\Shortcode\Shortcode;
+use AHWEBDEV\Wordpress\Widget\Widget;
 
 /**
- * FacebookAWD Like Button FrontController
+ * FacebookAWD Like Button Controller
  *
  * This file is the front controller
  * 
@@ -23,7 +27,7 @@ use AHWEBDEV\Wordpress\Controller\Controller;
  * @category     Extension
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
-class FrontController extends Controller
+class LikeButtonController extends Controller implements ShortcodeInterface, WidgetInterface
 {
 
     /**
@@ -50,6 +54,8 @@ class FrontController extends Controller
      */
     public function init()
     {
+        parent::init();
+
         //add the assets likebutton
         $assets = $this->container->getRoot()->getAssets();
         $publicUrl = plugins_url(null, __DIR__) . '/Resources/public';
@@ -72,6 +78,36 @@ class FrontController extends Controller
     public function enqueueScripts()
     {
         wp_enqueue_script($this->container->getSlug());
+    }
+
+    /**
+     * Register widgets
+     * 
+     * @global $wp_widget_factory
+     */
+    public function registerWidgets()
+    {
+        //widgets
+        global $wp_widget_factory;
+        $wp_widget_factory->widgets[$this->container->getSlug()] = new Widget(array(
+            'idBase' => $this->container->getSlug(),
+            'name' => $this->container->getTitle(),
+            'description' => $this->container->getTitle(),
+            'ptd' => $this->container->getPtd(),
+            'model' => 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton',
+            'selfCallback' => array($this->likeButtonManager, 'renderButton'),
+            'preview' => true
+        ));
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerShortcodes()
+    {
+        $model = 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton';
+        $likeButtonShortcode = new Shortcode($this->container->getSlug(), $model, array($this->likeButtonManager, 'renderButton'));
+        $likeButtonShortcode->register();
     }
 
     /**

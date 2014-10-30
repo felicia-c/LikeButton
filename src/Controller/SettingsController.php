@@ -18,14 +18,9 @@ use AHWEBDEV\Wordpress\Admin\AdminInterface;
 use AHWEBDEV\Wordpress\Admin\AjaxInterface;
 use AHWEBDEV\Wordpress\Admin\MetaboxInterface;
 use AHWEBDEV\Wordpress\Admin\TinyMceInterface;
-use AHWEBDEV\Wordpress\Admin\WidgetInterface;
-use AHWEBDEV\Wordpress\Controller\AdminMenuController as BaseController;
-use AHWEBDEV\Wordpress\Helper\Helper;
-use AHWEBDEV\Wordpress\Widget\Widget;
+use AHWEBDEV\Wordpress\Controller\AdminMenuController;
+use AHWEBDEV\Wordpress\Shortcode\Shortcode;
 use InvalidArgumentException;
-use stdClass;
-use WP_Post;
-use WP_Widget_Factory;
 
 /**
  * FacebookAWD Like Button SettingsController
@@ -37,7 +32,7 @@ use WP_Widget_Factory;
  * @category     Extension
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
-class SettingsController extends BaseController implements MetaboxInterface, WidgetInterface, AjaxInterface, TinyMceInterface
+class SettingsController extends AdminMenuController implements MetaboxInterface, AjaxInterface, TinyMceInterface
 {
 
     /**
@@ -90,8 +85,6 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
         //enqueue this script.
         $pageHook = $this->admin->getAdminMenuHook($this->container->getSlug());
         add_action('admin_print_scripts-' . $pageHook, array($this, 'enqueueScripts'));
-
-        $this->container->get('services.like_button_shortcode')->register();
     }
 
     /**
@@ -128,26 +121,6 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
 
         //add the like button boxes to the post.php also
         add_action('load-post.php', array($this, 'loadPageHook'));
-    }
-
-    /**
-     * Register widgets
-     * 
-     * @global WP_Widget_Factory $wp_widget_factory
-     */
-    public function registerWidgets()
-    {
-        //widgets
-        global $wp_widget_factory;
-        $wp_widget_factory->widgets[$this->container->getSlug()] = new Widget(array(
-            'idBase' => $this->container->getSlug(),
-            'name' => $this->container->getTitle(),
-            'description' => $this->container->getTitle(),
-            'ptd' => $this->container->getPtd(),
-            'model' => 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton',
-            'selfCallback' => array($this->container->get('controller.front'), 'renderLikeButton'),
-            'preview' => true
-        ));
     }
 
     /**
@@ -217,13 +190,13 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
      * This method is called by meta boxes in admin of plugin
      * and in the post types edition pages
      * 
-     * @param  stdClass           $postType
-     * @param  null|WP_Post       $post
+     * @param  $postType
+     * @param  $post
      * @return string
+     * @throws InvalidArgumentException
      */
     public function settingsPostTypeSection($postType, $post = null)
     {
-
         if (!$postType) {
             throw new InvalidArgumentException('The $postType arg is required for settingsSection');
         }
@@ -300,36 +273,32 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
         $request = filter_input_array(INPUT_POST);
         if ($request) {
             foreach ($request as $key => $postTypeRequest) {
-                if (preg_match('/' . $this->container->getSlug() . 'posttype/', $key)) {
-                    if (is_array($postTypeRequest)) {
-                        $isTokenValid = wp_verify_nonce($postTypeRequest['token'], 'fawd-token');
-                        if ($isTokenValid) {
+                if (preg_match('/' . $this->container->getSlug() . 'posttype/', $key) && is_array($postTypeRequest)) {
+                    if (wp_verify_nonce($postTypeRequest['token'], 'fawd-token')) {
+                        $likeButtonPostType = new LikeButtonPostType();
+                        $likeButtonPostType->bind($postTypeRequest);
+                        $likeButton = $likeButtonPostType->getLikeButton();
+                        $likeButton->bind($postTypeRequest);
 
-                            $likeButtonPostType = new LikeButtonPostType();
-                            $likeButtonPostType->bind($postTypeRequest);
-                            $likeButton = $likeButtonPostType->getLikeButton();
-                            $likeButton->bind($postTypeRequest);
-
-                            //save meta to post if redefine is used.
-                            if (isset($postTypeRequest['redefine']) && $postId) {
-                                if ($postTypeRequest['redefine'] == true) {
-                                    update_post_meta($postId, $this->container->getSlug() . '_posttype', $likeButtonPostType);
-                                } else {
-                                    delete_post_meta($postId, $this->container->getSlug() . '_posttype');
-                                }
-                                return;
+                        //save meta to post if redefine is used.
+                        if ($postId && isset($postTypeRequest['redefine'])) {
+                            if ($postTypeRequest['redefine'] == true) {
+                                update_post_meta($postId, $this->container->getSlug() . '_posttype', $likeButtonPostType);
+                            } else {
+                                delete_post_meta($postId, $this->container->getSlug() . '_posttype');
                             }
+                            return;
+                        }
 
-                            $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
-                            $this->om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
-                            $this->om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
-                            if ($this->isAjaxRequest()) {
-                                echo $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php', array(
-                                    'sectionClass' => $postTypeName,
-                                    'section' => $this->settingsPostTypeSection(get_post_type_object($postTypeName))
-                                ));
-                                exit;
-                            }
+                        $postTypeName = str_replace($this->container->getSlug() . 'posttype_', '', $key);
+                        $this->om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
+                        $this->om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
+                        if ($this->isAjaxRequest()) {
+                            echo $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php', array(
+                                'sectionClass' => $postTypeName,
+                                'section' => $this->settingsPostTypeSection(get_post_type_object($postTypeName))
+                            ));
+                            exit;
                         }
                     }
                 }
@@ -364,13 +333,13 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
             $likebutton = $this->likeButtonManager->create();
         }
         if ($shortcode) {
-            $success = "Code generated!";
-            $sections['shortcode'] = '<h4 class="text-primary">Using shortcode</h4><pre class="prettyprint">' . $shortcode . '</pre>';
-            $sections['phpcode'] = $this->render($this->container->getRootPath() . '/Resources/views/admin/phpCode.code.php', array(
+            $sections['phpcode'] = $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/admin/phpCode.code.php', array(
                 'shortcode' => $shortcode,
                 'likebuttonCode' => implode("\n", $this->likeButtonManager->generatePhpCode($likebutton))
             ));
+            $sections['shortcode'] = '<h4 class="text-primary">Using shortcode</h4><pre class="prettyprint">' . $shortcode . '</pre>';
             $sections['preview'] = '<h4 class="text-primary">Preview</h4><div class="well well-xs">' . do_shortcode($shortcode) . '</div>';
+            $success = "Code generated!";
         }
 
         $form = new Form($this->container->getSlug());
@@ -397,7 +366,7 @@ class SettingsController extends BaseController implements MetaboxInterface, Wid
             $shortCodeGeneratorRequest = $request[$this->container->getSlug() . 'shortcode_generator'];
             $likebutton = $this->likeButtonManager->create();
             $likebutton->bind($shortCodeGeneratorRequest);
-            $shortcodeString = Helper::shortCodeGenerator($this->container->getSlug(), $likebutton);
+            $shortcodeString = Shortcode::shortCodeGenerator($this->container->getSlug(), $likebutton);
 
             if ($this->isAjaxRequest()) {
                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';

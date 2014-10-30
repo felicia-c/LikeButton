@@ -9,7 +9,7 @@
 
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\FrontController;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\LikeButtonController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Shortcode\LikeButtonShortcode;
@@ -39,11 +39,8 @@ class LikeButtonPlugin extends Plugin
         $settingsController = new SettingsController($this, $this->container->get('admin'), $likeButtonManager);
         $this->set('controller.backend', $settingsController);
 
-        $frontController = new FrontController($this, $likeButtonManager);
-        $this->set('controller.front', $frontController);
-
-        $likeButtonShortcode = new LikeButtonShortcode($this->getSlug(), $likeButtonManager);
-        $this->set('services.like_button_shortcode', $likeButtonShortcode);
+        $frontController = new LikeButtonController($this, $likeButtonManager);
+        $this->set('controller.like_button', $frontController);
     }
 
     /**
@@ -52,7 +49,7 @@ class LikeButtonPlugin extends Plugin
     public function initControllers()
     {
         $this->get('controller.backend')->init();
-        $this->get('controller.front')->init();
+        $this->get('controller.like_button')->init();
     }
 
 }
