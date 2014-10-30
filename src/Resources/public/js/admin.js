@@ -25,6 +25,10 @@
             var forms = [{
                     classes: '.section.posttype_section form',
                     action: 'save_settings_facebookawdlikebutton'
+                },
+                {
+                    classes: '.section.shortcode_section_likebutton form',
+                    action: 'generator_facebookawdlikebutton'
                 }
             ];
 
@@ -33,20 +37,6 @@
                     e.preventDefault();
                     likeButton.parent.submitSettingsForm($(e.target), form.action);
                 });
-            });
-
-
-            /*
-             * Listen the shortcode generator form
-             */
-            var formShortCodeGenerator = {
-                classes: '.section.shortcode_section form',
-                action: 'shortcode_generator_facebookawdlikebutton'
-            };
-
-            $(document).on('submit', formShortCodeGenerator.classes, function (e) {
-                e.preventDefault();
-                likeButton.parent.submitSettingsForm($(e.target), formShortCodeGenerator.action);
             });
         };
     };

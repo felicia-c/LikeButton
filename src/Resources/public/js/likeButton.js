@@ -3,7 +3,7 @@
  * 
  * @returns {void}
  */
-var FacebookAWDLikeButton = function() {
+var FacebookAWDLikeButton = function () {
     this.parent = facebookAWD;
 };
 
@@ -13,13 +13,13 @@ var FacebookAWDLikeButton = function() {
  * @param {FacebookAWD} f
  * @returns {void}
  */
-(function(f) {
+(function (f) {
     f.prototype.LikeButton = FacebookAWDLikeButton;
 })(FacebookAWD);
 
 /**
  * Init
  */
-jQuery(window).on('FacebookAWD_ready', function(e, facebookAWD) {
+jQuery(window).on('FacebookAWD_ready', function (e, facebookAWD) {
     facebookAWD.likeButton = new facebookAWD.LikeButton();
 });

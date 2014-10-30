@@ -9,15 +9,20 @@
 
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
-use AHWEBDEV\FacebookAWD\Controller\AdminMenuController as BaseController;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
-use AHWEBDEV\Framework\Model\Model;
+use AHWEBDEV\Framework\ContainerInterface;
 use AHWEBDEV\Framework\TemplateManager\Form;
+use AHWEBDEV\Wordpress\Admin\AdminInterface;
+use AHWEBDEV\Wordpress\Admin\AjaxInterface;
 use AHWEBDEV\Wordpress\Admin\MetaboxInterface;
+use AHWEBDEV\Wordpress\Admin\TinyMceInterface;
+use AHWEBDEV\Wordpress\Admin\WidgetInterface;
+use AHWEBDEV\Wordpress\Controller\AdminMenuController as BaseController;
+use AHWEBDEV\Wordpress\Helper\Helper;
 use AHWEBDEV\Wordpress\Widget\Widget;
 use InvalidArgumentException;
-use RuntimeException;
 use stdClass;
 use WP_Post;
 use WP_Widget_Factory;
@@ -28,27 +33,30 @@ use WP_Widget_Factory;
  * This file is the setting controller
  * 
  * @subpackage   FacebookAWDLikeButton
- * @package   FacebookAWD
+ * @package      FacebookAWD
  * @category     Extension
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
-class SettingsController extends BaseController implements MetaboxInterface
+class SettingsController extends BaseController implements MetaboxInterface, WidgetInterface, AjaxInterface, TinyMceInterface
 {
 
     /**
-     * {@inheritdoc}
+     *
+     * @var LikeButtonManager 
      */
-    public function getMenuType()
-    {
-        return self::TYPE_SUBMENU;
-    }
+    protected $likeButtonManager;
 
     /**
-     * {@inheritdoc}
+     * Constructor
+     * 
+     * @param ContainerInterface $container
+     * @param AdminInterface $admin
+     * @param LikeButtonManager $likeButtonManager
      */
-    public function getMenuSlug()
+    public function __construct(ContainerInterface $container, AdminInterface $admin, LikeButtonManager $likeButtonManager)
     {
-        return $this->container->getSlug();
+        parent::__construct($container, $admin);
+        $this->likeButtonManager = $likeButtonManager;
     }
 
     /**
@@ -56,8 +64,17 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function getMenuTitle()
     {
-        return '<img src="' . plugins_url(null, __DIR__) . '/Resources/public/img/facebook_like_thumb.png' . '" style="float: left; width:15px; margin-right: 10px;" class="alig"> '
-                . preg_replace('/' . $this->container->getRoot()->getTitle() . '/', '', $this->container->getTitle());
+        $iconUrl = plugins_url(null, __DIR__) . '/Resources/public/img/facebook_like_thumb.png';
+        return '<img src="' . $iconUrl . '" style="float: left; width:15px; margin-right: 6px;"> ' . parent::getMenuTitle();
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function registerAjaxHook()
+    {
+        add_action('wp_ajax_save_settings_' . $this->container->getSlug(), array($this, 'handlesSettingsPostTypeSection'));
+        add_action('wp_ajax_generator_' . $this->container->getSlug(), array($this, 'handlesGeneratorSection'));
     }
 
     /**
@@ -66,9 +83,22 @@ class SettingsController extends BaseController implements MetaboxInterface
     public function init()
     {
         parent::init();
-        add_action('wp_ajax_save_settings_' . $this->container->getSlug(), array($this, 'handlesSettingsSection'));
-        add_action('wp_ajax_shortcode_generator_' . $this->container->getSlug(), array($this, 'handlesShortcodeSection'));
 
+        //add the related assets js and css
+        $this->addAssets();
+
+        //enqueue this script.
+        $pageHook = $this->admin->getAdminMenuHook($this->container->getSlug());
+        add_action('admin_print_scripts-' . $pageHook, array($this, 'enqueueScripts'));
+
+        $this->container->get('services.like_button_shortcode')->register();
+    }
+
+    /**
+     * Add the assets on the container
+     */
+    public function addAssets()
+    {
         //assets configurations
         $publicUrl = plugins_url(null, __DIR__) . '/Resources/public';
         $parentSlug = $this->container->getRoot()->getSlug();
@@ -77,22 +107,16 @@ class SettingsController extends BaseController implements MetaboxInterface
             'src' => $publicUrl . '/js/admin.js',
             'deps' => array($parentSlug . 'admin')
         );
-        //the init js script requires this asset to be loaded before to be enqueu
         $assets['script'][$parentSlug . 'admin-init']['deps'][] = $this->container->getSlug() . 'admin';
         $this->container->getRoot()->setAssets($assets);
+    }
 
-        $assets['script'][$this->container->getSlug() . 'likebuttonTinyMce'] = array(
-            'src' => $publicUrl . '/js/likebuttonTinyMce.js',
-            'deps' => array($parentSlug . 'admin')
-        );
-
-        //enqueue this script.
-        $pageHook = $this->admin->getAdminMenuHook($this->container->getSlug());
-        add_action('admin_print_scripts-' . $pageHook, array($this, 'enqueueScripts'));
-        add_action('widgets_init', array($this, 'registerWidgets'));
-
-        //add the tinyMce plugins for shortcode generator
-        add_action('init', array($this, 'shortcodeGeneratorTinyMceButton'));
+    /**
+     * Enqueue assets
+     */
+    public function enqueueScripts()
+    {
+        wp_enqueue_script($this->container->getSlug() . 'admin');
     }
 
     /**
@@ -102,14 +126,13 @@ class SettingsController extends BaseController implements MetaboxInterface
     {
         parent::adminMenu();
 
-        //add the like button boxes to the post.php
-        add_action('load-post.php', array($this, 'loadMetaboxes'));
+        //add the like button boxes to the post.php also
+        add_action('load-post.php', array($this, 'loadPageHook'));
     }
 
     /**
      * Register widgets
      * 
-     * @todo Add an interface to call this method automatically
      * @global WP_Widget_Factory $wp_widget_factory
      */
     public function registerWidgets()
@@ -133,36 +156,24 @@ class SettingsController extends BaseController implements MetaboxInterface
     public function addMetaBoxes($pageHook)
     {
         $adminController = $this->container->getRoot()->get('controller.backend');
-
-        //Default metaboxes
-        $adminController->addMetaboxes($pageHook);
-        remove_meta_box($pageHook . '_plugins', $pageHook, 'normal');
+        $adminController->addDefaultMetaBoxes($pageHook);
 
         //post types metaboxes
         $postTypes = get_post_types(array('public' => true), 'objects');
         foreach ($postTypes as $postType) {
             //facebookawd admin
-            add_meta_box($this->container->getSlug() . $postType->name, 'Display on ' . strtolower($postType->labels->name), array($this, 'settingsBoxes'), $pageHook, 'normal', 'default', array($postType));
-            add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsBoxes'), $postType->name, 'normal', 'default', array($postType));
-
-            //post type pages
-            add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
-            add_action('admin_print_styles-post.php', array($this->admin, 'enqueueScripts'));
-            add_action('save_post', array($this, 'handlesSettingsSection'));
-            add_action('edit_attachment', array($this, 'handlesSettingsSection'));
+            add_meta_box($this->container->getSlug() . $postType->name, 'Display on ' . strtolower($postType->labels->name), array($this, 'settingsPostTypeBoxes'), $pageHook, 'normal', 'default', array($postType));
+            add_meta_box($this->container->getSlug() . $postType->name, 'Like Button Settings', array($this, 'settingsPostTypeBoxes'), $postType->name, 'normal', 'default', array($postType));
         }
+        //post type pages
+        add_action('admin_print_styles-post.php', array($this->admin, 'enqueueStyles'));
+        add_action('admin_print_scripts-post.php', array($this->admin, 'enqueueScripts'));
+        add_action('save_post', array($this, 'handlesSettingsPostTypeSection'));
+        add_action('edit_attachment', array($this, 'handlesSettingsPostTypeSection'));
 
         //shortcode usage
-        $shortcodeString = $this->handlesShortcodeSection();
-        add_meta_box($this->container->getSlug() . '_shortcode', 'Shortcode generator', array($this, 'shortcodeBox'), $pageHook, 'normal', 'default', array($shortcodeString));
-    }
-
-    /**
-     * Enqueue assets
-     */
-    public function enqueueScripts()
-    {
-        wp_enqueue_script($this->container->getSlug() . 'admin');
+        $shortcodeString = $this->handlesGeneratorSection();
+        add_meta_box($this->container->getSlug() . '_generator', 'Like Button Generator', array($this, 'generatorBox'), $pageHook, 'normal', 'default', array($shortcodeString));
     }
 
     /**
@@ -170,20 +181,15 @@ class SettingsController extends BaseController implements MetaboxInterface
      */
     public function index()
     {
-
-        $this->handlesSettingsSection();
-        $application = $this->container->getRoot()->get('services.option_manager')->get('options.application');
-        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/metaboxes.html.php';
-        echo $this->render($template, array(
+        $this->handlesSettingsPostTypeSection();
+        echo $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/admin/metaboxes.html.php', array(
             'title' => $this->container->getTitle() . ' <a class="button-secondary" href="?page=' . $this->container->getRoot()->getSlug() . '">Back</a>',
-            'application' => $application,
             'args' => array(),
             'boxes' => array(
                 array(
-                    //'type' => 'do_accordion_sections',
                     'type' => 'do_meta_boxes',
                     'context' => 'normal'
-                ),
+                )
             ),
             'boxesSide' => array(
                 array(
@@ -198,12 +204,11 @@ class SettingsController extends BaseController implements MetaboxInterface
      * Wrap a section into a metabox
      * 
      * @param $post
-     * @param  array            $metaboxData
-     * @throws RuntimeException
+     * @param  array $metaboxData
      */
-    public function settingsBoxes($post, array $metaboxData)
+    public function settingsPostTypeBoxes($post, array $metaboxData)
     {
-        echo $this->settingsSection($metaboxData['args'][0], $post);
+        echo $this->settingsPostTypeSection($metaboxData['args'][0], $post);
     }
 
     /**
@@ -213,11 +218,10 @@ class SettingsController extends BaseController implements MetaboxInterface
      * and in the post types edition pages
      * 
      * @param  stdClass           $postType
-     * @param  LikeButtonPostType $likeButtonPostType
      * @param  null|WP_Post       $post
      * @return string
      */
-    public function settingsSection($postType, $post = null)
+    public function settingsPostTypeSection($postType, $post = null)
     {
 
         if (!$postType) {
@@ -273,15 +277,12 @@ class SettingsController extends BaseController implements MetaboxInterface
         );
         $sections['security'] = $form->processFields('posttype_' . $postType->name, $this->container->getRoot()->getTokenFormConfig());
 
-        $data = array('classes' => 'posttype_section section ' . $postType->name,
-            'withSubmit' => !$post,
-            'postTypeName' => $postType->name,
-            'sections' => $sections,
-            'success' => $success
-        );
-
-        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
-        return $this->render($template, $data);
+        return $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php', array('classes' => 'posttype_section section ' . $postType->name,
+                    'withSubmit' => !$post,
+                    'postTypeName' => $postType->name,
+                    'sections' => $sections,
+                    'success' => $success
+        ));
     }
 
     /**
@@ -294,7 +295,7 @@ class SettingsController extends BaseController implements MetaboxInterface
      * @param integer|null $postId
      * @return void
      */
-    public function handlesSettingsSection($postId = null)
+    public function handlesSettingsPostTypeSection($postId = null)
     {
         $request = filter_input_array(INPUT_POST);
         if ($request) {
@@ -316,7 +317,6 @@ class SettingsController extends BaseController implements MetaboxInterface
                                 } else {
                                     delete_post_meta($postId, $this->container->getSlug() . '_posttype');
                                 }
-
                                 return;
                             }
 
@@ -324,10 +324,9 @@ class SettingsController extends BaseController implements MetaboxInterface
                             $this->om->set($this->container->getSlug() . '.' . $postTypeName, $likeButtonPostType);
                             $this->om->set($this->container->getSlug() . '_' . $postTypeName . '_success', 'Settings were updated with success');
                             if ($this->isAjaxRequest()) {
-                                $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
-                                echo $this->render($template, array(
+                                echo $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php', array(
                                     'sectionClass' => $postTypeName,
-                                    'section' => $this->settingsSection(get_post_type_object($postTypeName))
+                                    'section' => $this->settingsPostTypeSection(get_post_type_object($postTypeName))
                                 ));
                                 exit;
                             }
@@ -339,52 +338,72 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Wrap a section into a metabox 
+     * Wrap the generator section
+     * 
+     * @param $post
+     * @param array $metaboxData
      */
-    public function shortcodeBox($post, array $metaboxData)
+    public function generatorBox($post, array $metaboxData)
     {
         $shortcode = $metaboxData['args'][0];
-        echo $this->shortcodeSection(null, $shortcode);
+        echo $this->generatorSection(null, $shortcode);
     }
 
-    public function shortcodeSection($likebutton = null, $shortcode = null)
+    /**
+     * Get the generator section
+     * 
+     * @param LikeButton $likebutton
+     * @param string $shortcode
+     * @return string
+     */
+    public function generatorSection(LikeButton $likebutton = null, $shortcode = null)
     {
         $success = false;
         $sections = array();
         if (!$likebutton) {
-            $likebutton = new LikeButton();
+            $likebutton = $this->likeButtonManager->create();
         }
-        $form = new Form($this->container->getSlug());
         if ($shortcode) {
-            $success = "Shortcode generated!";
-            $sections['shortcode'] = '<h4 class="text-primary">Shortcode</h4><div class="well well-xs"><samp>' . $shortcode . '</samp></div>';
+            $success = "Code generated!";
+            $sections['shortcode'] = '<h4 class="text-primary">Using shortcode</h4><pre class="prettyprint">' . $shortcode . '</pre>';
+            $sections['phpcode'] = $this->render($this->container->getRootPath() . '/Resources/views/admin/phpCode.code.php', array(
+                'shortcode' => $shortcode,
+                'likebuttonCode' => implode("\n", $this->likeButtonManager->generatePhpCode($likebutton))
+            ));
             $sections['preview'] = '<h4 class="text-primary">Preview</h4><div class="well well-xs">' . do_shortcode($shortcode) . '</div>';
         }
+
+        $form = new Form($this->container->getSlug());
         $sections['likebutton'] = $form->processFields('shortcode_generator', $likebutton->getFormConfig());
         $sections['security'] = $form->processFields('shortcode_generator', $this->container->getRoot()->getTokenFormConfig());
-        $data = array('classes' => 'shortcode_section section ',
-            'withSubmit' => 'Generate the shortcode',
+        $data = array('classes' => 'shortcode_section_likebutton section ',
+            'withSubmit' => 'Generate the Like Button',
             'sections' => $sections,
-            'success' => $success,
+            'success' => $success
         );
 
-        $template = $this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php';
-        return $this->render($template, $data);
+        return $this->render($this->container->getRoot()->getRootPath() . '/Resources/views/admin/settingsForm.html.php', $data);
     }
 
-    public function handlesShortcodeSection()
+    /**
+     * Handle the generator section
+     * 
+     * @return string
+     */
+    public function handlesGeneratorSection()
     {
         $request = filter_input_array(INPUT_POST);
         if (isset($request[$this->container->getSlug() . 'shortcode_generator'])) {
             $shortCodeGeneratorRequest = $request[$this->container->getSlug() . 'shortcode_generator'];
-            $likebutton = new LikeButton();
+            $likebutton = $this->likeButtonManager->create();
             $likebutton->bind($shortCodeGeneratorRequest);
-            $shortcodeString = $this->shortCodeGenerator($likebutton);
+            $shortcodeString = Helper::shortCodeGenerator($this->container->getSlug(), $likebutton);
+
             if ($this->isAjaxRequest()) {
                 $template = $this->container->getRoot()->getRootPath() . '/Resources/views/ajax/ajax.json.php';
                 echo $this->render($template, array(
-                    'sectionClass' => 'shortcode_section',
-                    'section' => $this->shortcodeSection($likebutton, $shortcodeString),
+                    'sectionClass' => 'shortcode_section_likebutton',
+                    'section' => $this->generatorSection($likebutton, $shortcodeString),
                     'shortcode' => $shortcodeString
                 ));
                 exit;
@@ -394,51 +413,26 @@ class SettingsController extends BaseController implements MetaboxInterface
     }
 
     /**
-     * Generate a shortcode from the LikeButton object
+     * Register plugins on tinyMce
      * 
-     * @param LikeButton $likebutton
-     * @return string
+     * @param array $plugins
+     * @return array
      */
-    public function shortCodeGenerator(Model $object)
+    public function registerTinyMcePlugins(array $plugins)
     {
-        $reflector = new \ReflectionClass(get_class($object));
-        $shortcodeTmp = '';
-        foreach ($reflector->getProperties() as $property) {
-            $method = 'get' . ucfirst($property->getName());
-            $value = null;
-            if ($reflector->hasMethod($method)) {
-                $value = call_user_func(array($object, $method));
-                if ($value === false) {
-                    $value = '0';
-                }
-                $shortcodeTmp .= $property->getName() . '="' . $value . '" ';
-            }
-        }
-        $shortcode = '[' . $this->container->getSlug() . ' ' . rtrim($shortcodeTmp) . ']';
-        return $shortcode;
-    }
-
-    public function shortcodeGeneratorTinyMceButton()
-    {
-        if (!current_user_can('edit_posts') && !current_user_can('edit_pages')) {
-            return;
-        }
-
-        if (get_user_option('rich_editing') == 'true') {
-            add_filter('mce_external_plugins', array($this, 'registerShortcodeGeneratorTinyMcePlugin'));
-            add_filter('mce_buttons', array($this, 'addShortcodeGeneratorTinyMceButton'));
-        }
-    }
-
-    public function registerShortcodeGeneratorTinyMcePlugin($plugins)
-    {
-        $plugins['facebookawdlikebutton_shortcode_generator'] = plugins_url(null, __DIR__) . '/Resources/public/js/likeButtonTinyMce.js';
+        $plugins[$this->container->getSlug() . '_shortcode_generator'] = plugins_url(null, __DIR__) . '/Resources/public/js/likeButtonTinyMce.js';
         return $plugins;
     }
 
-    public function addShortcodeGeneratorTinyMceButton($buttons)
+    /**
+     * Register buttons on tinyMce
+     * 
+     * @param array $buttons
+     * @return array
+     */
+    public function registerTinyMceButtons(array $buttons)
     {
-        $buttons[] = 'facebookawdlikebutton_shortcode_generator';
+        $buttons[] = $this->container->getSlug() . '_shortcode_generator';
         return $buttons;
     }
 

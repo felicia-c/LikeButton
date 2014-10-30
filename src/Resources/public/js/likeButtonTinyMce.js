@@ -1,14 +1,17 @@
+/**
+ * FacebookAWDLikeButton tinymce plugins
+ */
 (function () {
     tinymce.create('tinymce.plugins.facebookawdlikebutton_shortcode_generator', {
         init: function (ed, url) {
             var imgUrl = url.replace('/js', '/img');
             ed.addButton('facebookawdlikebutton_shortcode_generator', {
                 title: 'Like Button',
-                image: imgUrl + '/facebook_like_thumb.png',
+                image: imgUrl + '/facebook_like_thumb_bl.png',
                 onclick: function () {
                     //tb_show("Like Button Shortcode Generator", "/wp-admin/admin.php?page=facebookawdlikebutton&shortcode_generator=1&height=auto&TB_iframe=true");
                     jQuery.post(ajaxurl, {
-                        action: 'shortcode_generator_facebookawdlikebutton',
+                        action: 'generator_facebookawdlikebutton',
                         facebookawdlikebuttonshortcode_generator: {'fake': true}
                     }, function (data) {
                         ed.execCommand('mceInsertContent', false, data.shortcode);

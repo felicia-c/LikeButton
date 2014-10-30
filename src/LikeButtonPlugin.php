@@ -11,30 +11,39 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\FrontController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Shortcode\LikeButtonShortcode;
 use AHWEBDEV\Wordpress\Plugin\Plugin;
 
 /**
- * FacebookAWD Like Button
+ * FacebookAWD Like Button extension
  *
  * This file is the base container of the Facebook AWD LikeButton extension
  * 
  * @subpackage   FacebookAWDLikeButton
- * @package   FacebookAWD
+ * @package      FacebookAWD
  * @category     Extension
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
 class LikeButtonPlugin extends Plugin
 {
-    
+
     /**
      * {@ineritdoc}
      */
     public function boot()
     {
-        $settingsController = new SettingsController($this, $this->container->get('admin'));
+        $likeButtonManager = new LikeButtonManager($this);
+        $this->set('manager', $likeButtonManager);
+
+        $settingsController = new SettingsController($this, $this->container->get('admin'), $likeButtonManager);
         $this->set('controller.backend', $settingsController);
-        $frontController = new FrontController($this);
+
+        $frontController = new FrontController($this, $likeButtonManager);
         $this->set('controller.front', $frontController);
+
+        $likeButtonShortcode = new LikeButtonShortcode($this->getSlug(), $likeButtonManager);
+        $this->set('services.like_button_shortcode', $likeButtonShortcode);
     }
 
     /**

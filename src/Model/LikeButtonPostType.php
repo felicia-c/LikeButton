@@ -17,7 +17,7 @@ use AHWEBDEV\Framework\Model\Model;
  * This file is the LikeButtonPostType Model
  * 
  * @subpackage   FacebookAWDLikeButton
- * @package   FacebookAWD
+ * @package      FacebookAWD
  * @category     Extension
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
