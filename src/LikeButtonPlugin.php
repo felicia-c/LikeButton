@@ -11,8 +11,7 @@ namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\LikeButtonController;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Shortcode\LikeButtonShortcode;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
 use AHWEBDEV\Wordpress\Plugin\Plugin;
 
 /**

@@ -9,7 +9,7 @@
 
 namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager\LikeButtonManager;
+use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
 use AHWEBDEV\Framework\ContainerInterface;
 use AHWEBDEV\Wordpress\Admin\ShortcodeInterface;
 use AHWEBDEV\Wordpress\Admin\WidgetInterface;

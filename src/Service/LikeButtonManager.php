@@ -7,7 +7,7 @@
  * 
  */
 
-namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Manager;
+namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Service;
 
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton;
 use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButtonPostType;
