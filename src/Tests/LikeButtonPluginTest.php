@@ -19,6 +19,7 @@ class LikeButtonPluginTest extends \WP_UnitTestCase
 
     /**
      * @covers AHWEBDEV\FacebookAWD\FacebookAWD::boot
+     *
      * @todo   Implement testBoot().
      */
     public function testBoot()
@@ -26,5 +27,4 @@ class LikeButtonPluginTest extends \WP_UnitTestCase
         $instance = FacebookAwd::boot();
         $this->assertTrue($instance instanceof FacebookAWD);
     }
-
 }
