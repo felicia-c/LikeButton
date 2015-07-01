@@ -16,4 +16,4 @@ use AHWEBDEV\FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
 $loader = include dirname(__DIR__) . '/facebook-awd/vendor/autoload.php';
 $loader->addPsr4('AHWEBDEV\\FacebookAWD\\Plugin\\LikeButton\\', __DIR__ . "/src");
 $loader->register(true);
-$facebookAWDLikeButton = new LikeButtonPlugin(__FILE__);
+//$facebookAWDLikeButton = new LikeButtonPlugin(__FILE__);
