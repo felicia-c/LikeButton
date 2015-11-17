@@ -23,11 +23,11 @@
              * Listen the settings post type form
              */
             var forms = [{
-                    classes: '.section.posttype_section form',
-                    action: 'save_settings_facebookawdlikebutton'
+                    classes: 'div[id^="facebookawdlikebutton_type_"]',
+                    action: 'save_post_type_settings_facebookawdlikebutton'
                 },
                 {
-                    classes: '.section.shortcode_section_likebutton form',
+                    classes: '#facebookawdlikebutton_generator',
                     action: 'generator_facebookawdlikebutton'
                 }
             ];
@@ -42,8 +42,3 @@
     };
 
 })(FacebookAWDAdmin);
-
-jQuery(window).on('FacebookAWDAdmin_ready', function (e, facebookAWDAdmin) {
-    facebookAWDAdmin.likebutton = new facebookAWDAdmin.LikeButton();
-    facebookAWDAdmin.likebutton.bindEvents();
-});

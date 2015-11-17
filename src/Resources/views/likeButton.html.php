@@ -7,14 +7,24 @@
 ?>
 <div class="facebookAWD likeButton">
     <div class="fb-like"
-         data-href="<?php echo $likeButton->getHref(); ?>"
-         data-layout="<?php echo $likeButton->getLayout(); ?>"
-         data-action="<?php echo $likeButton->getAction(); ?>"
-         data-show-faces="<?php echo $likeButton->getShowFaces(); ?>"
-         data-share="<?php echo $likeButton->getShare(); ?>"
-         data-kid-directed-site="<?php echo $likeButton->getKidDirectedSite(); ?>"
-         data-colorscheme="<?php echo $likeButton->getColorscheme(); ?>"
-         data-ref="<?php echo $likeButton->getRef(); ?>"
-         data-width="<?php echo $likeButton->getWidth(); ?>">
+         <?php if (!empty($likeButton->getHref())) { ?>
+             data-href="<?php echo $likeButton->getHref(); ?>"
+         <?php } if (!empty($likeButton->getLayout())) { ?>
+             data-layout="<?php echo $likeButton->getLayout(); ?>"
+         <?php } if (!empty($likeButton->getAction())) { ?>
+             data-action="<?php echo $likeButton->getAction(); ?>"
+         <?php } if (!empty($likeButton->getShowFaces())) { ?>
+             data-show-faces="<?php echo $likeButton->getShowFaces(); ?>"
+         <?php } if (!empty($likeButton->getShare())) { ?>
+             data-share="<?php echo $likeButton->getShare(); ?>"
+         <?php } if (!empty($likeButton->getKidDirectedSite())) { ?>
+             data-kid-directed-site="<?php echo $likeButton->getKidDirectedSite(); ?>"
+         <?php }if (!empty($likeButton->getColorscheme())) { ?>
+             data-colorscheme="<?php echo $likeButton->getColorscheme(); ?>"
+         <?php } if (!empty($likeButton->getRef())) { ?>
+             data-ref="<?php echo $likeButton->getRef(); ?>"
+         <?php } if (!empty($likeButton->getWidth())) { ?>
+             data-width="<?php echo $likeButton->getWidth(); ?>"
+         <?php } ?>>
     </div>
 </div>

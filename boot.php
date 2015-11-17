@@ -1,7 +1,5 @@
 <?php
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
-
 /**
   Plugin Name: Facebook AWD Like Button
   Plugin URI: http://facebook-awd.ahwebdev.fr
@@ -14,6 +12,8 @@ use AHWEBDEV\FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
   Last modification: 22/05/2014
  */
 $loader = include dirname(__DIR__) . '/facebook-awd/vendor/autoload.php';
-$loader->addPsr4('AHWEBDEV\\FacebookAWD\\Plugin\\LikeButton\\', __DIR__ . "/src");
-$loader->register(true);
-//$facebookAWDLikeButton = new LikeButtonPlugin(__FILE__);
+$loader->addPsr4('FacebookAWD\\Plugin\\LikeButton\\', __DIR__ . "/src");
+
+use FacebookAWD\Plugin\LikeButton\LikeButtonPlugin;
+
+$facebookAWDRealtime = new LikeButtonPlugin();

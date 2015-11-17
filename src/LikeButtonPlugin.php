@@ -6,12 +6,15 @@
  * This file is part of the facebook AWD package
  */
 
-namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton;
+namespace FacebookAWD\Plugin\LikeButton;
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\LikeButtonController;
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller\SettingsController;
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
-use AHWEBDEV\Wordpress\Plugin;
+use FacebookAWD\Plugin\LikeButton\Controller\FrontController;
+use FacebookAWD\Plugin\LikeButton\Controller\Settings\LikeButtonGeneratorController;
+use FacebookAWD\Plugin\LikeButton\Controller\Settings\LikeButtonPostTypeController;
+use FacebookAWD\Plugin\LikeButton\Controller\Settings\SettingsController;
+use FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
+use PopCode\Wordpress\Asset\AssetManager;
+use PopCode\Wordpress\Plugin;
 
 /**
  * FacebookAWD Like Button extension.
@@ -24,27 +27,59 @@ use AHWEBDEV\Wordpress\Plugin;
  */
 class LikeButtonPlugin extends Plugin
 {
+
+    /**
+     * {@ineritdoc}.
+     */
+    public function getParent()
+    {
+        return 'facebookawd';
+    }
+
     /**
      * {@ineritdoc}.
      */
     public function boot()
     {
-        $likeButtonManager = new LikeButtonManager($this);
-        $this->set('manager', $likeButtonManager);
+        //register this plugin on the facebook awd container
+        \getFacebookAWD()->addPlugin($this->getSlug(), $this);
 
-        $settingsController = new SettingsController($this, $this->container->get('admin'), $likeButtonManager);
-        $this->set('controller.backend', $settingsController);
+        $this->createServices();
+        $this->createControllers();
 
-        $frontController = new LikeButtonController($this, $likeButtonManager);
-        $this->set('controller.like_button', $frontController);
+        $this->get('controller.like_button_generator')->init();
+        $this->get('controller.posttype')->init();
+        $this->get('controller.backend')->init();
     }
 
     /**
-     * Init the controllers of the plugin.
+     * Create the controller
      */
-    public function initControllers()
+    public function createControllers()
     {
-        $this->get('controller.backend')->init();
-        $this->get('controller.like_button')->init();
+        $likeButtonManager = $this->get('services.manager.like_button');
+        
+        $likeButtonGeneratorController = new LikeButtonGeneratorController($this, $likeButtonManager);
+        $this->set('controller.like_button_generator', $likeButtonGeneratorController);
+        
+        $likeButtonContentController = new LikeButtonPostTypeController($this, $likeButtonManager);
+        $this->set('controller.posttype', $likeButtonContentController);
+        
+        $settingsController = new SettingsController($this, $this->container->get('admin'));
+        $this->set('controller.backend', $settingsController);
+
+        $frontController = new FrontController($this, $likeButtonManager);
+        $this->set('controller.front', $frontController);
     }
+
+    /**
+     * Create the services
+     */
+    public function createServices()
+    {
+        $jsm = new AssetManager($this->slug, $this->getRootPath('Resources', 'config', 'js.php'));
+        $this->set('services.js_manager', $jsm);
+        $this->set('services.manager.like_button', new LikeButtonManager($this));
+    }
+
 }

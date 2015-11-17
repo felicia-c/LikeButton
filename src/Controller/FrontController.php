@@ -6,15 +6,15 @@
  * This file is part of the facebook AWD package
  */
 
-namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Controller;
+namespace FacebookAWD\Plugin\LikeButton\Controller;
 
-use AHWEBDEV\FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
-use AHWEBDEV\Framework\ContainerInterface;
-use AHWEBDEV\Wordpress\Admin\ShortcodeInterface;
-use AHWEBDEV\Wordpress\Admin\WidgetInterface;
-use AHWEBDEV\Wordpress\Controller\Controller;
-use AHWEBDEV\Wordpress\Shortcode\Shortcode;
-use AHWEBDEV\Wordpress\Widget\Widget;
+use FacebookAWD\Plugin\LikeButton\Service\LikeButtonManager;
+use PopCode\Framework\ContainerInterface;
+use PopCode\Wordpress\Admin\ShortcodeInterface;
+use PopCode\Wordpress\Admin\WidgetInterface;
+use PopCode\Wordpress\Controller\Controller;
+use PopCode\Wordpress\Shortcode\Shortcode;
+use PopCode\Wordpress\Widget\Widget;
 
 /**
  * FacebookAWD Like Button Controller.
@@ -25,8 +25,9 @@ use AHWEBDEV\Wordpress\Widget\Widget;
  *
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
-class LikeButtonController extends Controller implements ShortcodeInterface, WidgetInterface
+class FrontController extends Controller implements ShortcodeInterface, WidgetInterface
 {
+
     /**
      * The likeButton manager.
      *
@@ -52,15 +53,6 @@ class LikeButtonController extends Controller implements ShortcodeInterface, Wid
     public function init()
     {
         parent::init();
-
-        //add the assets likebutton
-        $assets = $this->container->getRoot()->getAssets();
-        $publicUrl = plugins_url(null, __DIR__).'/Resources/public';
-        $assets['script'][$this->container->getSlug()] = array(
-            'src' => $publicUrl.'/js/likeButton.js',
-            'deps' => array($this->container->getRoot()->getSlug()),
-        );
-        $this->container->getRoot()->setAssets($assets);
 
         //add the like button to content
         add_filter('the_content', array($this, 'addLikeButton'));
@@ -91,7 +83,7 @@ class LikeButtonController extends Controller implements ShortcodeInterface, Wid
             'name' => $this->container->getTitle(),
             'description' => $this->container->getTitle(),
             'ptd' => $this->container->getPtd(),
-            'model' => 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton',
+            'class' => 'FacebookAWD\Plugin\LikeButton\Model\LikeButton',
             'selfCallback' => array($this->likeButtonManager, 'renderButton'),
             'preview' => true,
         ));
@@ -102,7 +94,7 @@ class LikeButtonController extends Controller implements ShortcodeInterface, Wid
      */
     public function registerShortcodes()
     {
-        $model = 'AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton';
+        $model = 'FacebookAWD\Plugin\LikeButton\Model\LikeButton';
         $likeButtonShortcode = new Shortcode($this->container->getSlug(), $model, array($this->likeButtonManager, 'renderButton'));
         $likeButtonShortcode->register();
     }
@@ -150,4 +142,5 @@ class LikeButtonController extends Controller implements ShortcodeInterface, Wid
 
         return implode('', $contents);
     }
+
 }

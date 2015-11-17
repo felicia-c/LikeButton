@@ -6,10 +6,9 @@
  * This file is part of the facebook AWD package
  */
 
-namespace AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model;
+namespace FacebookAWD\Plugin\LikeButton\Model;
 
-use AHWEBDEV\Framework\Model\Model;
-use AHWEBDEV\Framework\Annotation as AWD;
+use PopCode\Framework\Model\Model;
 
 /**
  * FacebookAWD Like Button Model.
@@ -20,13 +19,16 @@ use AHWEBDEV\Framework\Annotation as AWD;
  *
  * @author       Alexandre Hermann <hermann.alexandre@ahwebdev.fr>
  */
+ 
 class LikeButton extends Model
 {
+
     /**
      * Href.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
+     *             type="text",
      *             help="The absolute URL of the page that will be liked. (Empty = auto)"
      *             )
      */
@@ -36,9 +38,9 @@ class LikeButton extends Model
      * Action.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
      *             help="The verb to display on the button.",
-     *             type="select",
+     *             type="radio",
      *             options={
      *             {"value":"like", "label": "Like"},
      *             {"value":"recommend", "label": "Recommend"}
@@ -51,7 +53,7 @@ class LikeButton extends Model
      * Layout.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
      *             help="Selects one of the different layouts that are available for the plugin.",
      *             type="select",
      *             options={
@@ -68,9 +70,9 @@ class LikeButton extends Model
      * Share.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
      *             help="Specifies whether to include a share button beside the Like button. This only works with the XFBML version.",
-     *             type="select",
+     *             type="radio",
      *             options="boolean"
      *             )
      */
@@ -80,7 +82,8 @@ class LikeButton extends Model
      * Width.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
+     *             type="text",
      *             help="The width of the plugin. The layout you choose affects the minimum and default widths you can use."
      *             )
      */
@@ -90,9 +93,10 @@ class LikeButton extends Model
      * Colorscheme.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
+     *
      *             help="The color scheme used by the plugin for any text outside of the button itself.",
-     *             type="select",
+     *             type="radio",
      *             options={
      *             {"value":"light", "label": "Light"},
      *             {"value":"dark", "label": "Dark"}
@@ -105,9 +109,9 @@ class LikeButton extends Model
      * Kid directed site.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
      *             help="If your web site or online service, or a portion of your service is directed to children under 13 you must enable this.",
-     *             type="select",
+     *             type="radio",
      *             options="boolean"
      *             )
      */
@@ -117,9 +121,10 @@ class LikeButton extends Model
      * Ref.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
+     *             type="text",
      *             help="A label for tracking referrals which must be less than 50 characters and can contain alphanumeric characters and some punctuation (currently +/=-.:_).",
-     *             attr={
+     *             attrs={
      *             "maxlength": 50,
      *             "class": "form-control"
      *             }
@@ -131,21 +136,27 @@ class LikeButton extends Model
      * Show faces.
      *
      * @var string
-     * @AWD\Form(
+     * @FormType(
      *             help="Specifies whether to display profile photos below the button (standard layout only). You must not enable this on child-directed sites.",
-     *             type="select",
+     *             type="radio",
      *             options="boolean"
      *             )
      */
     protected $showFaces;
 
+    public function __construct()
+    {
+        $this->action = 'like';
+        $this->colorscheme = 'light';
+        $this->kidDirectedSite = false;
+        $this->showFaces = false;
+        $this->layout = 'standard';
+    }
+
     /**
      * Get href.
      *
      * @return string
-     * @AWD\Form(
-     *                help="Specifies whether to include a share button beside the Like button. This only works with the XFBML version."
-     *                )
      */
     public function getHref()
     {
@@ -319,7 +330,7 @@ class LikeButton extends Model
     /**
      * Set Kid directed site.
      *
-     * @param boolean $kidDirectedSite
+     * @param bool $kidDirectedSite
      *
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -347,7 +358,7 @@ class LikeButton extends Model
     /**
      * Set show faces.
      *
-     * @param boolean $showFaces
+     * @param bool $showFaces
      *
      * @return \AHWEBDEV\FacebookAWD\Plugin\LikeButton\Model\LikeButton
      */
@@ -357,4 +368,5 @@ class LikeButton extends Model
 
         return $this;
     }
+
 }
